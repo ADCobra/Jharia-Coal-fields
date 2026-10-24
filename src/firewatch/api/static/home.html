@@ -48,6 +48,7 @@
       <div class="ih-actions">
         <a class="btn btn-light" href="#now">See what's burning now</a>
         <a class="btn btn-ghost" href="#mission">Why it matters</a>
+        <a class="btn btn-ghost" href="/real/#now" id="hero-real" data-view="real-hero" hidden>See the real Landsat season</a>
       </div>
     </div>
     <div class="wrap ih-foot">
@@ -181,6 +182,10 @@
   <section class="now" id="now" aria-labelledby="now-title">
     <div class="wrap">
       <div>
+        <div class="view-switch" id="view-switch" role="group" aria-label="Which data to show" hidden>
+          <a href="/#now" data-view="sim">Simulated demo</a>
+          <a href="/real/#now" data-view="real">Real Landsat data <small>read-only</small></a>
+        </div>
         <span class="eyebrow">Live from orbit</span>
         <h2 id="now-title">Underground coal fires, <em>watched from space.</em></h2>
         <p class="lead">Fire Watch checks every Landsat photo of the coalfield, follows each fire from pass to pass and keeps the roads above them safe.</p>

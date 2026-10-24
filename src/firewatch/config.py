@@ -199,6 +199,7 @@ class APIConfig(_Section):
     allow_runs: bool
     scenery: bool
     show_demo_login: bool
+    real_view: str | None
 
 
 class AWSConfig(_Section):

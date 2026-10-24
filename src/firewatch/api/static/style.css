@@ -46,6 +46,10 @@ button { font: inherit; color: inherit; }
 .tagline { margin: 0; font-size: 13px; color: #b9c1c5; }
 .data-badge { border: 0; cursor: pointer; font-family: var(--body); font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; background: #343b3f; color: #e8ebe6; white-space: nowrap; }
 .data-badge.real { background: #4f7343; color: #fff; }
+.view-link { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 12px; border: 1px solid currentColor; color: inherit; text-decoration: none; white-space: nowrap; opacity: 0.85; }
+.view-link:hover { opacity: 1; }
+.read-only .decision .actions .btn, .read-only .decision .actions .link:last-child { display: none; }
+.ro-note { font-weight: 600; }
 .ghost { text-decoration: none; display: inline-block; border: 1px solid #5d666b; background: transparent; color: #f3f4f0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500; white-space: nowrap; }
 .ghost:hover { border-color: #f3f4f0; }
 .ghost:focus-visible { outline-color: var(--sulphur); }

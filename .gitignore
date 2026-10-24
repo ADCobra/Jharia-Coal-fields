@@ -16,3 +16,4 @@ data/*.csv
 .venv-fetch/
 .requirements-mac.txt
 data/real/scenes/
+bundle/real/

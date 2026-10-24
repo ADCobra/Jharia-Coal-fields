@@ -5,6 +5,23 @@ const PLATFORMS = { LANDSAT_8: "Landsat 8", LANDSAT_9: "Landsat 9" };
 function byId(id) { return document.getElementById(id); }
 const API = (path) => (window.FW_API ? window.FW_API(path) : path);
 const DASH = window.FW_DASH || "/dashboard";
+// Under a prefix (the read-only real-data view at /real), links to the dashboard and the site root stay in that view.
+if (window.FW_BASE) {
+  document.querySelectorAll('a[href="/dashboard"]').forEach((a) => { a.href = DASH; });
+  document.querySelectorAll('a[href="/"]:not([data-view])').forEach((a) => { a.href = `${window.FW_BASE}/`; });
+}
+
+function renderViewSwitch(status) {
+  const inReal = Boolean(window.FW_BASE);
+  if (!status.other_view && !inReal) return;
+  const box = byId("view-switch");
+  box.querySelector('[data-view="sim"]').classList.toggle("on", !inReal);
+  box.querySelector('[data-view="real"]').classList.toggle("on", inReal);
+  box.querySelectorAll("a").forEach((a) => a.setAttribute("aria-current", a.classList.contains("on") ? "page" : "false"));
+  box.hidden = false;
+  const hero = byId("hero-real");
+  if (hero) hero.hidden = inReal;
+}
 function fmtDate(iso) { return iso ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : ""; }
 function li(cls, ...parts) {
   const item = document.createElement("li");
@@ -376,6 +393,7 @@ async function main() {
   window.FW_STATUS = status;
   window.dispatchEvent(new CustomEvent("fw-status", { detail: status }));
   setupAbout(status);
+  renderViewSwitch(status);
   if (!started) { started = true; setupSink(); }
   setLoading(false);
   byId("cmp-empty").hidden = true;

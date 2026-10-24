@@ -24,6 +24,12 @@ const state = { places: [], alertsNewest: "", passClosed: new Set(), isLatest: t
 function $(id) { return document.getElementById(id); }
 function asset(path) { return window.FW_ASSET ? window.FW_ASSET(path) : path; }
 
+// Under a prefix (the read-only real-data view at /real), links to the site root and the API stay in that view.
+if (window.FW_BASE) {
+  document.querySelectorAll('a[href="/"]').forEach((a) => { a.href = `${window.FW_BASE}/`; });
+  document.querySelectorAll('a[href^="/api/"]').forEach((a) => { a.href = window.FW_BASE + a.getAttribute("href"); });
+}
+
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -50,7 +56,7 @@ function showOffline(on, text) {
 async function api(path, options = {}) {
   let res;
   try {
-    res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...options });
+    res = await fetch(window.FW_API ? window.FW_API(path) : path, { headers: { "Content-Type": "application/json" }, ...options });
   } catch (err) {
     showOffline(true);
     throw new Error("the server can't be reached");
@@ -436,6 +442,16 @@ async function loadSummary() {
   $("help-data").textContent = real
     ? "This dashboard shows real Landsat 8 and 9 photos of Jharia from Microsoft Planetary Computer, with roads, mines and plants from OpenStreetMap."
     : "This dashboard is running on simulated demo data: a computer-made coalfield with known fires, used to test the system.";
+  if (s.read_only) badge.textContent = "Real Landsat data · read-only";
+  const link = $("view-link");
+  if (s.other_view) {
+    link.href = `${s.other_view.href}dashboard`;
+    link.textContent = `Switch to ${s.other_view.label.toLowerCase()} →`;
+    link.hidden = false;
+  }
+  document.body.classList.toggle("read-only", Boolean(s.read_only));
+  $("ro-note").hidden = !s.read_only;
+  if (s.read_only) $("decisions-block").querySelector("h2").firstChild.textContent = "Decisions raised for a person ";
   const canRun = s.can_run && (s.source === "synthetic" || (s.source === "real" && s.unprocessed > 0));
   $("run-next").hidden = !canRun;
   $("run-next").disabled = Boolean(s.running);

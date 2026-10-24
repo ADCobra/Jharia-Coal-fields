@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import sys
+import tempfile
 from pathlib import Path
 
 from firewatch.config import Settings, load_settings
@@ -152,12 +153,44 @@ def cmd_approvals(args) -> int:
     return 0
 
 
+def real_view_settings(settings, base: Path):
+    """Settings for the archived real-data run under api.real_view, or None when there is none."""
+    import yaml
+
+    from firewatch.config import deep_merge
+
+    if not settings.api.real_view:
+        return None
+    root = Path(settings.api.real_view)
+    root = root if root.is_absolute() else base / root
+    if not (root / "state.db").exists():
+        return None
+    overrides = yaml.safe_load((base / "config" / "real.yaml").read_text()) or {}
+    deep_merge(overrides, {
+        "data": {"source": "real"},
+        "storage": {"backend": "local", "root": str(root / "blobs"), "prefix": "firewatch"},
+        "state": {"backend": "sqlite", "sqlite_path": str(root / "state.db")},
+        "notify": {"backend": "console", "outbox": str(Path(tempfile.gettempdir()) / "firewatch-real-outbox.jsonl")},
+        "observability": {"log_group": None, "metrics_namespace": None},
+        "agent": {"planner": "policy"},
+        "api": {"allow_runs": False, "real_view": None},
+    })
+    return settings.with_overrides(overrides)
+
+
 def cmd_serve(args) -> int:
     import uvicorn
 
     from firewatch.api.app import create_app
+    from firewatch.pipeline.context import build_context
 
-    app = create_app(_settings(args), Path(args.base_dir))
+    settings, base = _settings(args), Path(args.base_dir)
+    real = real_view_settings(settings, base)
+    app = create_app(settings, base, other_view={"href": "/real/", "label": "Real Landsat data"} if real else None)
+    if real:
+        app.mount("/real", create_app(real, base, ctx=build_context(real, base), read_only=True, prefix="/real",
+                                      other_view={"href": "/", "label": "Simulated demo"}))
+        print(f"Serving the real-data run read-only under /real ({settings.api.real_view})", file=sys.stderr)
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
     return 0
 

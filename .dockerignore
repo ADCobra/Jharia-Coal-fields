@@ -8,3 +8,6 @@ ci-reports
 *.egg-info
 .pytest_cache
 .env
+data/real/scenes
+.venv-fetch
+bundle/real/*.db-*

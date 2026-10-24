@@ -126,3 +126,16 @@ def test_mine_sites_and_aerial_view(client):
     aerial = client.get("/api/scenery", headers=AUTH)
     assert aerial.status_code == 200 and aerial.headers["content-type"] == "image/webp"
     assert client.get("/api/summary", headers=AUTH).json()["scenery_bounds"]
+
+
+def test_read_only_view_needs_no_login_and_refuses_writes(demo_ctx):
+    app = create_app(demo_ctx.settings, demo_ctx.base_dir, ctx=demo_ctx, read_only=True, prefix="/real", other_view={"href": "/", "label": "Simulated demo"})
+    with TestClient(app) as c:
+        page = c.get("/dashboard")
+        assert page.status_code == 200 and 'window.FW_BASE="/real"' in page.text
+        assert 'window.FW_BASE="/real"' in c.get("/").text
+        summary = c.get("/api/summary").json()
+        assert summary["read_only"] and not summary["can_run"] and summary["other_view"]["href"] == "/"
+        assert c.get("/api/public/status").json()["read_only"]
+        assert c.post("/api/runs/next").status_code == 403
+        assert c.post("/api/approvals/anything", json={"approve": True}).status_code == 403

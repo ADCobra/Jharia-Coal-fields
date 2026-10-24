@@ -21,6 +21,7 @@
       <datalist id="find-list"></datalist>
     </form>
     <button type="button" class="data-badge" id="data-badge" aria-haspopup="dialog" aria-controls="about-data">Loading</button>
+    <a class="view-link" id="view-link" hidden></a>
     <div class="bell-wrap">
       <button type="button" class="icon-btn" id="bell" aria-expanded="false" aria-controls="bell-panel" aria-label="Alerts">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -102,6 +103,7 @@
         <section class="block" id="decisions-block" hidden>
           <h2>Needs your decision <span class="count" id="decision-count"></span></h2>
           <p class="block-intro">Fire Watch never reopens a road by itself, and asks you when it isn't sure.</p>
+          <p class="block-intro ro-note" id="ro-note" hidden>This is a read-only record of the real Landsat season: these are the decisions the agent raised for a person, left as they were. Nothing here can be changed.</p>
           <div id="decisions"></div>
         </section>
 

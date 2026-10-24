@@ -48,7 +48,10 @@ class RunState:
         self.last_error: str | None = None
 
 
-def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None) -> FastAPI:
+def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None, read_only: bool = False, prefix: str = "", other_view: dict | None = None) -> FastAPI:
+    """The API and pages. A read-only copy (read_only=True) serves an archived run, for example the real Landsat
+    season under /real: no sign-in, every write refused. `prefix` is where it is mounted; `other_view` links the
+    pages to the other copy."""
     state = {"ctx": ctx}
     runs = RunState()
 
@@ -84,6 +87,8 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
         return None
 
     def user(request: Request, credentials: HTTPBasicCredentials | None = Depends(security)) -> str:
+        if read_only:
+            return "viewer"
         name = signed_in(request, credentials)
         if name is None:
             raise HTTPException(status_code=401, detail="sign in at /login")
@@ -94,23 +99,46 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
             raise HTTPException(503, "starting up")
         return state["ctx"]
 
+    if read_only:
+        @app.middleware("http")
+        async def refuse_writes(request: Request, call_next):
+            if request.method not in ("GET", "HEAD", "OPTIONS"):
+                return JSONResponse({"detail": "This is a read-only view; nothing here can be changed."}, status_code=403)
+            return await call_next(request)
+
+    # Pages served under a prefix get a one-line script that points their requests at that prefix.
+    view_script = (
+        f"<script>window.FW_BASE={json.dumps(prefix)};"
+        "window.FW_API=function(p){return p.indexOf('/api/')===0?window.FW_BASE+p:p};"
+        "window.FW_ASSET=window.FW_API;window.FW_DASH=window.FW_BASE+'/dashboard';"
+        "window.FW_EXAMPLES=window.FW_BASE+'/api/public/examples';</script>"
+    )
+
+    def page(name: str) -> Response:
+        if not prefix:
+            return FileResponse(STATIC / name, headers={"Cache-Control": "no-store"})
+        text = (STATIC / name).read_text().replace("</head>", view_script + "\n</head>", 1)
+        return HTMLResponse(text, headers={"Cache-Control": "no-store"})
+
     @app.get("/healthz")
     def healthz():
         return {"ok": True, "version": __version__, "time": utcnow().isoformat()}
 
     @app.get("/")
     def home():
-        return FileResponse(STATIC / "home.html", headers={"Cache-Control": "no-store"})
+        return page("home.html")
 
     @app.get("/help")
     def help_page():
+        if prefix:
+            return RedirectResponse("/help", status_code=303)
         return FileResponse(STATIC / "help.html", headers={"Cache-Control": "no-store"})
 
     @app.get("/dashboard")
     def index(request: Request, credentials: HTTPBasicCredentials | None = Depends(security)):
-        if signed_in(request, credentials) is None:
+        if not read_only and signed_in(request, credentials) is None:
             return RedirectResponse("/login", status_code=303)
-        return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-store"})
+        return page("index.html")
 
     @app.get("/login")
     def login_page(error: int = 0):
@@ -159,6 +187,8 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
                 closed.setdefault(ctx.roads.segments[sid].name, []).append(sid)
         return jsonable({
             "source": ctx.source.name,
+            "read_only": read_only,
+            "other_view": other_view,
             "photos": len(done),
             "first_photo": min((r["acquired"] for r in done), default=None),
             "latest_photo": latest["acquired"] if latest else None,
@@ -303,7 +333,9 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
             "scenery_bounds": scenery.get("bounds"),
             "scenery": {"kind": scenery.get("kind", "simulated"), "acquired": scenery.get("acquired"), "platform": scenery.get("platform")} if scenery else None,
             "unprocessed": unprocessed,
-            "can_run": settings.api.allow_runs,
+            "can_run": settings.api.allow_runs and not read_only,
+            "read_only": read_only,
+            "other_view": other_view,
             "next_synthetic_index": repo.get_meta("synthetic_next_index") if ctx.source.name == "synthetic" else None,
             "running": runs.active,
             "last_error": runs.last_error,

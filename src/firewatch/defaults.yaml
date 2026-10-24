@@ -160,6 +160,9 @@ api:
   # A demo project: the login page comes filled in with the user and password, so judges can open the dashboard
   # in one click. Set to false for any real deployment.
   show_demo_login: true
+  # A processed real-data run (blobs/ and state.db, made by scripts/make_real_bundle.sh). When it exists, serve
+  # mounts it read-only under /real, next to the main view.
+  real_view: bundle/real
 
 aws:
   region: us-west-2

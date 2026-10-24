@@ -21,6 +21,7 @@ RUN pip install --no-deps .
 
 COPY config ./config
 COPY data ./data
+COPY bundle ./bundle
 RUN firewatch download-models --dest models \
     && mkdir -p var reports \
     && chown -R firewatch:firewatch /app
