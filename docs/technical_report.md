@@ -17,7 +17,7 @@ Tested on two synthetic coalfields built with Landsat's own calibration (section
 | Agent, 36 scripted situations | 35 decisions match a safety officer's call, no unwarranted closures, no dismissed fires; 10 of 10 safety and memory checks; 14 one-at-a-time changes to its constants flip at most 3 decisions | `reports/agent.md` |
 | Run time | median 7.3 s per pass on two x86 vCPUs, including a second, independent alignment; 42 s on the live Graviton t4g.small with 2 GB | `reports/bench.md`, `reports/graviton/bench.md` |
 
-It has also processed 23 real Landsat 8 and 9 scenes of Jharia, from 4 November 2025 to 14 October 2026, end to end (section 5.7). Real scenes have no ground truth, so they show the system runs on real data and lands in the right range, not how accurate it is: on the 20 clear passes the hot ground has a median area of 2.90 km² (2.06 to 6.67), against NRSC's 1.89 km² for 2020.
+It has also processed 23 real Landsat 8 and 9 scenes of Jharia, from 4 November 2025 to 14 October 2026, end to end (section 5.7). Real scenes have no ground truth, so they show the system runs on real data and lands in the right range, not how accurate it is: on the 20 clear passes the hot ground has a median area of 2.92 km² (2.08 to 6.34), against NRSC's 1.89 km² for 2020. The live deployment shows this run read-only at `/real`.
 
 ## 2. The problem
 
@@ -219,11 +219,13 @@ There is no ground truth for a subsurface fire on a given day, so the check is a
 
 | Reference | NRSC area | Clear passes | Our median | Range | Ratio |
 | --- | --- | --- | --- | --- | --- |
-| NRSC 2020, against Nov 2025 to Oct 2026 | 1.89 km² | 20 | 2.90 km² | 2.06–6.67 km² | 1.54 |
+| NRSC 2020, against Nov 2025 to Oct 2026 | 1.89 km² | 20 | 2.92 km² | 2.08–6.34 km² | 1.55 |
 
-A ratio between about 0.5 and 2 means the detector is in the right range; it is not a pixel-level validation, the methods and thresholds differ, and the reference is five years older. Most hotspots sit within 500 m of a mapped mine. The largest area (6.67 km² on 13 April 2026) falls in the pre-monsoon heat; without ground truth there is no telling whether that is more fire or sun-heated ground the detrending did not remove.
+A ratio between about 0.5 and 2 means the detector is in the right range; it is not a pixel-level validation, the methods and thresholds differ, and the reference is five years older. Most hotspots sit within 500 m of a mapped mine. The largest area (6.34 km² on 13 April 2026) falls in the pre-monsoon heat; without ground truth there is no telling whether that is more fire or sun-heated ground the detrending did not remove.
 
-Real data needed different settings from the synthetic worlds (`config/real.yaml`): a stricter seed and grow contrast (8 K and 4 K, against 4 K and 1.5 K), a closure distance of 100 m instead of 250 m because roads are packed around the mines, and a 90 m position-noise allowance in tracking, because real outlines change shape between passes and their centres jitter. On real data the agent closes only mine haul roads by itself; public roads always go to a person. Over the season it closed 3 roads and raised 123 decisions for a person, which nobody worked through, so they pile up; a real deployment needs someone assigned to review them.
+Real data needed different settings from the synthetic worlds (`config/real.yaml`): a stricter seed and grow contrast (8 K and 4 K, against 4 K and 1.5 K), a closure distance of 100 m instead of 250 m because roads are packed around the mines, and a 90 m position-noise allowance in tracking, because real outlines change shape between passes and their centres jitter. On real data the agent closes only mine haul roads by itself; public roads always go to a person. Over the season it made 5 automatic closures on 4 haul roads and raised 126 decisions for a person, which nobody worked through, so they pile up; a real deployment needs someone assigned to review them.
+
+These figures come from a fresh run of the same 23 scenes with the current code, the one served read-only at `/real`. An earlier run gave a median of 2.90 km² (2.06 to 6.67), 3 closures and 123 decisions; detection differs by a few hotspots on some passes between the two runs.
 
 `firewatch eval firms` checks our hotspots against NASA FIRMS VIIRS and MODIS detections within a day of each pass. It has not been run, because it needs a FIRMS archive download.
 
@@ -286,7 +288,7 @@ Fire Watch can close roads that people depend on for work and travel, and it can
 **Before a real deployment:**
 - Turn off the filled-in demo sign-in (`api.show_demo_login: false`), and replace the shared demo login with one account per person, so that every approval is attributable to a named reviewer.
 - Restrict the dashboard to known networks (`ALLOWED_CIDR`).
-- Assign someone to work through the review queue. On real data it grew to 123 decisions in a season.
+- Assign someone to work through the review queue. On real data it grew to 126 decisions in a season.
 - Re-tune and re-test the thresholds with the safety teams who will use it, since every threshold here was set on synthetic data or by hand.
 
 ## 10. Reproducing
