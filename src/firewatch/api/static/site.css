@@ -243,7 +243,7 @@ pre code { background: none; padding: 0; color: inherit; }
 
 .sim { padding-bottom: 12px; }
 .sim-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 18px; align-items: stretch; }
-.sim-stage { position: relative; min-height: 460px; border-radius: 14px; overflow: hidden; background: radial-gradient(ellipse at 50% 20%, #34404a, #15191c 70%); box-shadow: 0 18px 40px rgba(30, 35, 38, 0.18); touch-action: pan-y; cursor: grab; }
+.sim-stage { position: relative; min-height: 520px; border-radius: 14px; overflow: hidden; background: radial-gradient(ellipse at 50% 20%, #34404a, #15191c 70%); box-shadow: 0 18px 40px rgba(30, 35, 38, 0.18); touch-action: pan-y; cursor: grab; }
 .sim-stage:active { cursor: grabbing; }
 #sim-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .sim-labels { position: absolute; inset: 0; pointer-events: none; }
@@ -252,7 +252,7 @@ pre code { background: none; padding: 0; color: inherit; }
 .sim-tag.fire.factory { background: var(--steel); }
 .sim-tag.dist { background: rgba(255, 255, 255, 0.92); color: var(--coal); transform: translate(-50%, -50%); }
 .sim-tag.road { background: rgba(20, 22, 24, 0.7); }
-.sim-banner { position: absolute; left: 16px; right: 16px; top: 16px; display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.96); border-left: 6px solid #9aa3a8; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25); }
+.sim-banner { position: absolute; left: 16px; right: auto; max-width: min(560px, calc(100% - 32px)); top: 16px; display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.96); border-left: 6px solid #9aa3a8; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25); }
 .sim-banner b { display: block; font: 700 24px/1.1 var(--narrow); }
 .sim-banner small { display: block; font-size: 14px; color: var(--seam); line-height: 1.35; }
 .sim-banner-icon { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 22px/1 var(--narrow); color: #fff; background: #9aa3a8; }
