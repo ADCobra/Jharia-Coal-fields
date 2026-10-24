@@ -1,0 +1,11 @@
+data:
+  source: landsat
+  requester_pays: true
+  prefer_s3: true
+
+roads:
+  path: data/jharia_roads.geojson
+  routes: config/routes.example.yaml
+
+masks:
+  industrial: data/jharia_industrial.geojson

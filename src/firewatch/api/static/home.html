@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jharia Fire Watch</title>
+  <meta name="description" content="Underground coal fires in Jharia, watched from space. Check road closures, review fires, and see how it works.">
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Kannada:ital@0;1&family=Wix+Madefor+Display:wght@400;500;600;700&display=swap">
+  <link rel="preload" as="image" href="https://ember-energy.org/app/uploads/2026/05/dhanbad-coal-mine-aerial-view-hero.jpg" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="/static/site.css">
+  <link rel="stylesheet" href="/static/impact.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="nav-brand" href="/">Jharia Fire Watch</a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="#mission" class="hide-sm">Mission</a>
+        <a href="#look" class="hide-sm">Check a place</a>
+        <a href="#roads" class="hide-sm">Road status</a>
+        <a href="/help">Help</a>
+        <a class="btn btn-go" href="/dashboard">Open dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="impact-hero" id="top" aria-labelledby="ih-title">
+    <div class="ih-slides" aria-hidden="true">
+      <figure class="ih-slide" data-caption="Open-cast coal mines from the air, Dhanbad district." data-credit="Ember" data-source="https://ember-energy.org/latest-insights/understanding-indias-coal-mine-methane-landscape/"><img src="https://ember-energy.org/app/uploads/2026/05/dhanbad-coal-mine-aerial-view-hero.jpg" alt="" referrerpolicy="no-referrer" fetchpriority="high"></figure>
+      <figure class="ih-slide" data-caption="Coal carried out of the pit by hand, one basket at a time." data-credit="iStock via Down To Earth" data-source="https://www.downtoearth.org.in/energy/by-2050-coal-india-limited-may-have-to-lay-off-73-800-jobs-global-energy-monitor-92237"><img src="https://cf-images.assettype.com/down-to-earth/import/library/large/2023-10-11/0.23669400_1697001849_istock-1088329072.jpg?w=1600&amp;auto=format%2Ccompress&amp;fit=max" alt="" referrerpolicy="no-referrer"></figure>
+      <figure class="ih-slide" data-caption="Women carry coal up from a pit in Jharkhand." data-credit="Business Insider" data-source="https://www.businessinsider.com/photos-indias-illegal-coal-mines-2012-10"><img src="https://i.insider.com/506d78e4ecad04a86400001e?width=1200&amp;format=jpeg&amp;auto=webp" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+      <figure class="ih-slide" data-caption="Coal gatherers rest beside their baskets." data-credit="BBC Future" data-source="https://www.bbc.com/future/article/20211103-india-how-a-just-transition-can-make-coal-history"><img src="https://ychef.files.bbci.co.uk/1280x720/p0b37ytq.jpg" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+      <figure class="ih-slide" data-caption="A meal break on the coal heaps of Jharkhand." data-credit="AP via Al Jazeera" data-source="https://www.aljazeera.com/news/2021/7/28/india-coal-mining-water-crisis-jharkhand-environment"><img src="https://www.aljazeera.com/wp-content/uploads/2021/07/AP19302423347854.jpg?resize=1920%2C1440" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+      <figure class="ih-slide" data-caption="Loading coal tubs underground." data-credit="Robb Kendrick, National Geographic" data-source="https://www.nationalgeographic.com/photography/article/robb-kendrick-life-in-indias-coal-mines"><img src="https://i.natgeofe.com/n/8714ec27-5ae8-459c-b4af-11efa6da0ad4/140327-kendrick-coal-india-09.jpg?w=1920" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+      <figure class="ih-slide" data-caption="Miners push a loaded tub along the rails." data-credit="Mint" data-source="https://www.livemint.com/Industry/zi7TpugXNqHkw3O1YwE1dO/Coal-India-risks-burning-investors-as-govt-set-to-offload-10.html"><img src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2017/02/15/Photos/Processed/coal-kU0E--621x414@LiveMint.jpg" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+      <figure class="ih-slide" data-caption="Shovelling coal at a loading point." data-credit="The Hans India" data-source="https://www.thehansindia.com/business/coal-indias-73800-jobs-at-risk-till-2050-warns-report-828806"><img src="https://assets.thehansindia.com/h-upload/2023/10/10/1388021-coal-india.webp" alt="" referrerpolicy="no-referrer" loading="lazy"></figure>
+    </div>
+    <div class="ih-shade" aria-hidden="true"></div>
+    <div class="ih-glow" aria-hidden="true"></div>
+    <div class="wrap ih-body">
+      <p class="ih-kicker"><i aria-hidden="true"></i>Jharia coalfield &middot; Jharkhand, India</p>
+      <h1 id="ih-title">The ground under Jharia has been <em>burning since 1916.</em></h1>
+      <p class="ih-lead">Underground coal fires crack and sink the land that people live, work and drive on. Fire Watch follows every one of them from space, and closes a road before a fire reaches it.</p>
+      <div class="ih-actions">
+        <a class="btn btn-light" href="#now">See what's burning now</a>
+        <a class="btn btn-ghost" href="#mission">Why it matters</a>
+      </div>
+    </div>
+    <div class="wrap ih-foot">
+      <p class="ih-cap"><span id="ih-cap"></span><small id="ih-credit"></small></p>
+      <div class="ih-dots" id="ih-dots" aria-label="Photos"></div>
+      <a class="ih-scroll" href="#mission">Scroll</a>
+    </div>
+  </section>
+
+  <section class="mission" id="mission" aria-labelledby="mission-title">
+    <div class="wrap">
+      <span class="mission-eyebrow" id="mission-title">The mission</span>
+      <p class="mission-text">A fire you can't see is still a fire. <span class="dim">Every 8 days a Landsat satellite crosses Jharia.</span> <em>Every fire</em> gets followed, and <em>every road</em> above one gets a decision, <span class="dim">with a person in charge whenever it matters.</span></p>
+      <ul class="stats">
+        <li><b>1916</b><span>the year Jharia's coal seams were first recorded burning</span></li>
+        <li><b>8 <sup>days</sup></b><span>between Landsat passes over the coalfield</span></li>
+        <li><b>48 <sup>days</sup></b><span>how far ahead each fire's spread is projected</span></li>
+        <li><b>1.89 <sup>km²</sup></b><span>of ground mapped as burning by NRSC in 2020</span></li>
+      </ul>
+    </div>
+    <div class="reel" aria-label="Life on the coalfield">
+      <div class="reel-track">
+        <figure><img src="https://i.insider.com/506d78e4ecad04a86400001e?width=800&amp;format=jpeg&amp;auto=webp" alt="Women carrying baskets of coal up from a pit" referrerpolicy="no-referrer" loading="lazy"><figcaption>Carrying coal up from the pit<small>Business Insider</small></figcaption></figure>
+        <figure><img src="https://www.aljazeera.com/wp-content/uploads/2021/07/AP19302423347854.jpg?resize=800%2C600" alt="Three workers eating a meal on a coal heap" referrerpolicy="no-referrer" loading="lazy"><figcaption>A meal break on the heaps<small>AP via Al Jazeera</small></figcaption></figure>
+        <figure><img src="https://cf-images.assettype.com/down-to-earth/import/library/large/2023-10-11/0.23669400_1697001849_istock-1088329072.jpg?w=900&amp;auto=format%2Ccompress&amp;fit=max" alt="A line of women carrying coal baskets on their heads past an open-cast mine" referrerpolicy="no-referrer" loading="lazy"><figcaption>Walking out of an open-cast mine<small>iStock via Down To Earth</small></figcaption></figure>
+        <figure><img src="https://ychef.files.bbci.co.uk/1280x720/p0b37ytq.jpg" alt="Three coal gatherers sitting with empty baskets" referrerpolicy="no-referrer" loading="lazy"><figcaption>Gatherers between loads<small>BBC Future</small></figcaption></figure>
+        <figure><img src="https://i.natgeofe.com/n/8714ec27-5ae8-459c-b4af-11efa6da0ad4/140327-kendrick-coal-india-09.jpg?w=900" alt="Miners loading coal tubs underground" referrerpolicy="no-referrer" loading="lazy"><figcaption>Loading tubs underground<small>Robb Kendrick, National Geographic</small></figcaption></figure>
+        <figure><img src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2017/02/15/Photos/Processed/coal-kU0E--621x414@LiveMint.jpg" alt="Miners in helmets pushing a coal tub" referrerpolicy="no-referrer" loading="lazy"><figcaption>Pushing a loaded tub<small>Mint</small></figcaption></figure>
+        <figure><img src="https://assets.thehansindia.com/h-upload/2023/10/10/1388021-coal-india.webp" alt="Workers shovelling coal" referrerpolicy="no-referrer" loading="lazy"><figcaption>Shovelling at a loading point<small>The Hans India</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://i.insider.com/506d78e4ecad04a86400001e?width=800&amp;format=jpeg&amp;auto=webp" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Carrying coal up from the pit<small>Business Insider</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://www.aljazeera.com/wp-content/uploads/2021/07/AP19302423347854.jpg?resize=800%2C600" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>A meal break on the heaps<small>AP via Al Jazeera</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://cf-images.assettype.com/down-to-earth/import/library/large/2023-10-11/0.23669400_1697001849_istock-1088329072.jpg?w=900&amp;auto=format%2Ccompress&amp;fit=max" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Walking out of an open-cast mine<small>iStock via Down To Earth</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://ychef.files.bbci.co.uk/1280x720/p0b37ytq.jpg" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Gatherers between loads<small>BBC Future</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://i.natgeofe.com/n/8714ec27-5ae8-459c-b4af-11efa6da0ad4/140327-kendrick-coal-india-09.jpg?w=900" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Loading tubs underground<small>Robb Kendrick, National Geographic</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2017/02/15/Photos/Processed/coal-kU0E--621x414@LiveMint.jpg" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Pushing a loaded tub<small>Mint</small></figcaption></figure>
+        <figure aria-hidden="true"><img src="https://assets.thehansindia.com/h-upload/2023/10/10/1388021-coal-india.webp" alt="" referrerpolicy="no-referrer" loading="lazy"><figcaption>Shovelling at a loading point<small>The Hans India</small></figcaption></figure>
+      </div>
+    </div>
+    <p class="wrap reel-note">Photos belong to the publishers credited and are shown from their own sites.</p>
+  </section>
+
+  <section class="now" id="now" aria-labelledby="now-title">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Live from orbit</span>
+        <h2 id="now-title">Underground coal fires, <em>watched from space.</em></h2>
+        <p class="lead">Fire Watch checks every Landsat photo of the coalfield, follows each fire from pass to pass and keeps the roads above them safe.</p>
+        <div class="hero-actions">
+          <a class="btn btn-go" href="#start">Find what you need</a>
+          <a class="btn" href="#try">Try it yourself</a>
+          <a class="btn" href="#demo" id="watch-demo">&#9654; Watch the demo</a>
+        </div>
+      </div>
+      <aside class="live" aria-label="Latest status" aria-live="polite">
+        <div class="live-head"><span class="live-dot" aria-hidden="true"></span>Latest satellite photo<button type="button" class="live-badge" id="live-badge" aria-haspopup="dialog" aria-controls="about-data">Loading</button></div>
+        <p class="live-date" id="live-date"><span class="skel" style="width:70%"></span></p>
+        <p class="live-sub" id="live-sub"><span class="skel" style="width:90%"></span></p>
+        <div class="live-off" id="live-off" hidden>
+          <p><b>Can't reach Fire Watch right now.</b> The rest of this page still works. Fire and road numbers appear once the server answers.</p>
+          <button type="button" class="btn" id="live-retry">Try again</button>
+        </div>
+        <dl class="live-nums">
+          <div class="hot"><dt>Fires being tracked</dt><dd id="n-fires"><span class="skel num"></span></dd></div>
+          <div><dt>Road sections closed</dt><dd id="n-closed"><span class="skel num"></span></dd></div>
+          <div class="ask"><dt>Decisions waiting</dt><dd id="n-asks"><span class="skel num"></span></dd></div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+
+  <section class="section look" id="look" aria-labelledby="look-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="look-title">The coalfield in the latest photo</h2>
+        <p>Drag the line to compare the ordinary photo with the heat image from the same satellite pass. Each ring is a fire Fire Watch is following.</p>
+      </div>
+      <div class="look-grid">
+        <figure class="compare">
+          <div class="compare-frame loading" id="compare-frame">
+            <img id="cmp-photo" alt="" draggable="false">
+            <div class="cmp-heat" id="cmp-heat"><img id="cmp-lst" alt="" draggable="false"></div>
+            <div class="cmp-dots" id="cmp-dots" aria-hidden="true"></div>
+            <div class="cmp-line" id="cmp-line" aria-hidden="true"><span></span></div>
+            <span class="cmp-tag left" aria-hidden="true">Photo</span>
+            <span class="cmp-tag right" aria-hidden="true">Heat</span>
+            <input type="range" class="cmp-range" id="cmp-range" min="0" max="100" value="50" aria-label="Move between the photo, on the left, and the heat image, on the right">
+            <p class="cmp-empty" id="cmp-empty" hidden>No satellite photo has been processed yet, so there is nothing to compare.</p>
+          </div>
+          <figcaption id="cmp-cap"><span class="skel" style="width:60%"></span></figcaption>
+        </figure>
+        <div class="place" id="place">
+          <h3>Check a place</h3>
+          <p>Type a town, mine or road to find the nearest fire and whether a road there is closed.</p>
+          <form class="place-form" id="place-form" autocomplete="off">
+            <input type="search" id="place-input" list="place-list" placeholder="For example Jharia or Katras" aria-label="Town, mine or road">
+            <button type="submit" class="btn btn-go">Check</button>
+          </form>
+          <datalist id="place-list"></datalist>
+          <div class="place-result" id="place-result" aria-live="polite"></div>
+          <p class="place-try" id="place-try"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sim" id="try" aria-labelledby="try-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="try-title">Try it: you set the fire, Fire Watch decides</h2>
+        <p>Move the sliders to change an underground fire, and watch the agent's decision change in the 3D coalfield. It uses the same scores and safety rules as the real system. Bring a hot fire within 250 m of the road and see what happens to the people and trucks on it when the road stays open, and when it closes.</p>
+      </div>
+      <div class="sim-grid">
+        <div class="sim-stage" id="sim-stage" tabindex="0" aria-label="3D coalfield. Use the arrow keys to turn the view." aria-describedby="sim-sr">
+          <canvas id="sim-canvas" aria-hidden="true"></canvas>
+          <p class="sr-only" id="sim-sr"></p>
+          <div class="sim-labels" id="sim-labels" aria-hidden="true">
+            <span class="sim-tag fire" id="lab-fire">Fire</span>
+            <span class="sim-tag dist" id="lab-dist">450 m</span>
+            <span class="sim-tag road" id="lab-road">Road</span>
+          </div>
+          <div class="sim-banner" id="sim-banner" role="status" aria-live="polite">
+            <span class="sim-banner-icon" id="sim-icon" aria-hidden="true"></span>
+            <span><b id="sim-decision">Keeps watching</b><small id="sim-why">Not a danger to a road right now.</small></span>
+          </div>
+          <div class="sim-alert" id="sim-alert" aria-hidden="true" hidden><b id="sim-alert-title"></b><span id="sim-alert-text"></span></div>
+          <button type="button" class="sim-sound" id="sim-sound" aria-pressed="false" aria-label="Turn sound on">
+            <svg class="i-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="m17 9 5 6m0-6-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="i-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Sound off</span>
+          </button>
+          <p class="sim-hint" aria-hidden="true">Drag or use arrow keys to turn the view</p>
+        </div>
+        <div class="sim-panel">
+          <div class="presets" role="group" aria-label="Try a situation">
+            <span>Try:</span>
+            <button type="button" data-preset="quiet">Quiet fire</button>
+            <button type="button" data-preset="near">Fire at the road</button>
+            <button type="button" data-preset="spread">Heading for the road</button>
+            <button type="button" data-preset="cloud">Under cloud</button>
+            <button type="button" data-preset="factory">Coke ovens</button>
+          </div>
+          <div class="presets real" id="real-examples" role="group" aria-label="Real fires from the satellite photos" hidden>
+            <span>Real fires:</span>
+          </div>
+          <label class="ctl-row"><span>Fire heat <output id="o-heat">+14 °C</output></span><input type="range" id="s-heat" min="2" max="30" step="1" value="14"><small>How much hotter the ground is than around it</small></label>
+          <label class="ctl-row"><span>Distance to the road <output id="o-dist">450 m</output></span><input type="range" id="s-dist" min="0" max="1000" step="10" value="450"><small>Where the fire is now</small></label>
+          <label class="ctl-row"><span>Moving toward the road <output id="o-speed">2 m a day</output></span><input type="range" id="s-speed" min="0" max="8" step="0.5" value="2"><small>Sets how far it could spread in 48 days</small></label>
+          <label class="ctl-row"><span>Cloud over the fire <output id="o-cloud">0%</output></span><input type="range" id="s-cloud" min="0" max="100" step="5" value="0"><small>Satellites can't see through cloud</small></label>
+          <div class="toggles">
+            <label><input type="checkbox" id="t-seen" checked> Seen on earlier photos</label>
+            <label><input type="checkbox" id="t-factory"> Neat rectangle on a mapped plant</label>
+          </div>
+          <div class="meters">
+            <div class="meter"><div class="meter-top"><span>Risk</span><b id="m-risk">0.42 medium</b></div><div class="bar"><i id="b-risk"></i><em style="left:40%"></em><em style="left:62%"></em></div><div class="bar-scale"><span>low</span><span style="left:40%">medium</span><span style="left:62%">high</span></div></div>
+            <div class="meter"><div class="meter-top"><span>How sure it is</span><b id="m-conf">100%</b></div><div class="bar"><i id="b-conf"></i><em style="left:70%"></em></div><div class="bar-scale"><span style="left:70%">enough to act alone</span></div></div>
+          </div>
+          <p class="sim-reach" id="sim-reach"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section demo" id="demo" aria-labelledby="demo-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="demo-title">See it in one minute</h2>
+        <p>From a satellite pass to a closed road, and back. An animated walk-through of what Fire Watch does on every photo.</p>
+      </div>
+      <div class="player" id="player">
+        <div class="stage" id="stage">
+          <svg id="scene" viewBox="0 0 1280 720" role="img" aria-label="Animated demo: a satellite photographs the coalfield, finds an underground fire, predicts its spread, closes the nearby road and later a person reopens it">
+            <defs>
+              <radialGradient id="g-fire"><stop offset="0" stop-color="#fff3b0"/><stop offset="0.35" stop-color="#ffb347"/><stop offset="0.7" stop-color="#e2511f" stop-opacity="0.75"/><stop offset="1" stop-color="#d23f1d" stop-opacity="0"/></radialGradient>
+              <radialGradient id="g-warm"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.85"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+              <radialGradient id="g-hot"><stop offset="0" stop-color="#ffffff"/><stop offset="0.4" stop-color="#ffe066"/><stop offset="1" stop-color="#ff9f1c" stop-opacity="0"/></radialGradient>
+              <radialGradient id="g-pit"><stop offset="0" stop-color="#1b1d1f"/><stop offset="0.6" stop-color="#3a3c3e"/><stop offset="1" stop-color="#5d5f5a"/></radialGradient>
+              <linearGradient id="g-beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd8ff" stop-opacity="0.55"/><stop offset="1" stop-color="#9fd8ff" stop-opacity="0"/></linearGradient>
+              <clipPath id="scan-clip"><rect id="scan-rect" x="0" y="0" width="0" height="720"/></clipPath>
+              <pattern id="p-oven" width="14" height="70" patternUnits="userSpaceOnUse"><rect width="14" height="70" fill="#6b6e72"/><rect x="2" width="9" height="70" fill="#4a4d50"/></pattern>
+            </defs>
+
+            <g id="ground">
+              <rect width="1280" height="720" fill="#7d7a5c"/>
+              <path d="M0 0h420l-60 180H0z" fill="#6f7a52"/>
+              <path d="M860 0h420v260l-260 40-120-160z" fill="#73804f"/>
+              <path d="M0 520l300-30 120 230H0z" fill="#6c7a4e"/>
+              <path d="M880 610l400-60v170H930z" fill="#77814f"/>
+              <g fill="#5d6b44" opacity="0.8"><circle cx="90" cy="70" r="14"/><circle cx="130" cy="110" r="11"/><circle cx="60" cy="150" r="12"/><circle cx="1180" cy="80" r="15"/><circle cx="1220" cy="140" r="11"/><circle cx="1130" cy="170" r="10"/><circle cx="80" cy="640" r="13"/><circle cx="1230" cy="660" r="12"/></g>
+              <ellipse cx="760" cy="200" rx="150" ry="95" fill="#8a8670"/>
+              <ellipse cx="760" cy="200" rx="120" ry="75" fill="url(#g-pit)"/>
+              <ellipse cx="760" cy="200" rx="120" ry="75" fill="none" stroke="#8d8f88" stroke-width="3" opacity="0.6"/>
+              <ellipse cx="760" cy="200" rx="88" ry="54" fill="none" stroke="#7a7c76" stroke-width="3" opacity="0.6"/>
+              <ellipse cx="760" cy="200" rx="56" ry="34" fill="none" stroke="#6a6c66" stroke-width="3" opacity="0.6"/>
+              <ellipse cx="380" cy="300" rx="110" ry="70" fill="#8a8670"/>
+              <ellipse cx="380" cy="300" rx="86" ry="54" fill="url(#g-pit)"/>
+              <ellipse cx="380" cy="300" rx="60" ry="36" fill="none" stroke="#7a7c76" stroke-width="3" opacity="0.6"/>
+              <path d="M520 560c40-30 120-20 150 10s-20 60-90 55-100-35-60-65z" fill="#9a958a"/>
+              <ellipse cx="560" cy="120" rx="60" ry="30" fill="#4f6a73"/>
+              <g id="village" fill="#b7aa96"><rect x="150" y="560" width="22" height="16" rx="2"/><rect x="182" y="548" width="18" height="14" rx="2"/><rect x="210" y="572" width="24" height="16" rx="2"/><rect x="165" y="590" width="20" height="14" rx="2"/><rect x="240" y="552" width="18" height="16" rx="2"/><rect x="196" y="604" width="22" height="14" rx="2" fill="#9a6e5c"/><rect x="230" y="596" width="16" height="12" rx="2" fill="#9a6e5c"/></g>
+              <g id="ovens"><rect x="1040" y="540" width="170" height="70" fill="url(#p-oven)"/><rect x="1040" y="540" width="170" height="70" fill="none" stroke="#3a3c3e" stroke-width="3"/><rect x="1186" y="500" width="12" height="40" fill="#3a3c3e"/></g>
+              <path id="main-road" d="M0 470 C 320 450 640 470 960 450 S 1200 440 1280 436" fill="none" stroke="#cfc6ae" stroke-width="16" stroke-linecap="round"/>
+              <path d="M0 470 C 320 450 640 470 960 450 S 1200 440 1280 436" fill="none" stroke="#f3eedd" stroke-width="1.5" stroke-dasharray="14 12"/>
+              <path id="haul-road" d="M760 278 C 750 330 742 380 735 460" fill="none" stroke="#bfb092" stroke-width="10" stroke-linecap="round"/>
+              <path id="haul-closed" d="M756 318 C 750 350 745 380 741 410" fill="none" stroke="#d23f1d" stroke-width="12" stroke-linecap="round"/>
+              <path id="detour" d="M760 278 C 860 300 900 380 880 452" fill="none" stroke="#ffd75a" stroke-width="4" stroke-dasharray="3 9" stroke-linecap="round"/>
+              <text x="40" y="440" class="sc-label sc-road">Dhanbad&#8211;Jharia road</text>
+              <text x="772" y="300" class="sc-label sc-road">Haul road H2</text>
+              <text x="1040" y="530" class="sc-label">Coke ovens</text>
+              <text x="150" y="540" class="sc-label">Village</text>
+              <text x="700" y="110" class="sc-label">Open-cast mine</text>
+            </g>
+
+            <g id="thermal" clip-path="url(#scan-clip)">
+              <rect width="1280" height="720" fill="#1d1033" opacity="0.72"/>
+              <g id="warm-spots"><circle cx="760" cy="200" r="90" fill="url(#g-warm)"/><circle cx="380" cy="300" r="70" fill="url(#g-warm)"/><circle cx="590" cy="585" r="60" fill="url(#g-warm)"/></g>
+              <circle id="heat-oven" cx="1125" cy="575" r="110" fill="url(#g-hot)"/>
+              <circle id="heat-fire" cx="660" cy="350" r="85" fill="url(#g-fire)"/>
+            </g>
+
+            <g id="beam"><path d="M600 60 L 520 720 L 680 720 Z" fill="url(#g-beam)"/></g>
+            <g id="sat" transform="translate(600 60)">
+              <rect x="-36" y="-7" width="26" height="14" fill="#3f6e8c" stroke="#cfe3f0" stroke-width="1.5"/>
+              <rect x="10" y="-7" width="26" height="14" fill="#3f6e8c" stroke="#cfe3f0" stroke-width="1.5"/>
+              <rect x="-10" y="-12" width="20" height="24" rx="3" fill="#e8ebe6"/>
+              <circle cx="0" cy="14" r="4" fill="#e8ebe6"/>
+            </g>
+
+            <g id="cone"><path d="M660 350 C 640 300 690 268 735 300 C 780 335 760 420 700 415 C 650 410 640 380 660 350 Z" fill="#d23f1d" fill-opacity="0.12" stroke="#ff8a65" stroke-width="3" stroke-dasharray="10 8"/></g>
+            <g id="ring-fire"><circle cx="660" cy="350" r="52" fill="none" stroke="#ff8a65" stroke-width="4"/></g>
+            <g id="ring-oven"><rect x="1030" y="530" width="190" height="90" rx="6" fill="none" stroke="#7fb3d5" stroke-width="4"/></g>
+            <g id="tag-fire" class="tag"><rect x="560" y="268" width="96" height="30" rx="15" fill="#d23f1d"/><text x="608" y="289" text-anchor="middle">Fire 6</text></g>
+            <g id="tag-oven" class="tag"><rect x="996" y="630" width="258" height="30" rx="15" fill="#3f6e8c"/><text x="1125" y="651" text-anchor="middle">Factory heat: ignored</text></g>
+            <g id="measure"><path d="M700 352 H 744" stroke="#fff" stroke-width="3" stroke-dasharray="4 4"/><circle cx="700" cy="352" r="4" fill="#fff"/><circle cx="744" cy="352" r="4" fill="#fff"/><g class="tag"><rect x="604" y="378" width="132" height="28" rx="14" fill="rgba(20,20,24,0.85)"/><text x="670" y="398" text-anchor="middle">218 m to road</text></g></g>
+
+            <g id="barriers">
+              <g class="barrier-1" transform="translate(756 318)"><rect x="-22" y="-8" width="44" height="12" rx="2" fill="#fff" stroke="#9c2a10" stroke-width="2"/><path d="M-16 -8l-6 9M-4 -8l-10 12M8 -8l-10 12M20 -8l-10 12" stroke="#d23f1d" stroke-width="4"/></g>
+              <g class="barrier-2" transform="translate(741 410)"><rect x="-22" y="-8" width="44" height="12" rx="2" fill="#fff" stroke="#9c2a10" stroke-width="2"/><path d="M-16 -8l-6 9M-4 -8l-10 12M8 -8l-10 12M20 -8l-10 12" stroke="#d23f1d" stroke-width="4"/></g>
+            </g>
+
+            <g id="trucks">
+              <g id="truck-a" class="truck"><rect x="-18" y="-8" width="24" height="16" rx="2" fill="#e2b007" stroke="#3a2f00"/><rect x="-14" y="-5" width="16" height="10" fill="#1b1d1f"/><rect x="7" y="-7" width="11" height="14" rx="2" fill="#2b3134"/></g>
+              <g id="truck-b" class="truck"><rect x="-18" y="-8" width="24" height="16" rx="2" fill="#e2b007" stroke="#3a2f00"/><rect x="-14" y="-5" width="16" height="10" fill="#b98c00"/><rect x="7" y="-7" width="11" height="14" rx="2" fill="#2b3134"/></g>
+              <g id="truck-h" class="truck"><g id="truck-h-body" transform="rotate(95)"><rect x="-18" y="-8" width="24" height="16" rx="2" fill="#e2b007" stroke="#3a2f00"/><rect x="-14" y="-5" width="16" height="10" fill="#1b1d1f"/><rect x="7" y="-7" width="11" height="14" rx="2" fill="#2b3134"/></g><g id="truck-h-alert"><circle cx="16" cy="-16" r="10" fill="#d23f1d" stroke="#fff" stroke-width="2"/><text x="16" y="-11" text-anchor="middle" class="alert-text">!</text></g></g>
+            </g>
+
+            <g id="card" class="card">
+              <rect x="880" y="120" width="360" height="200" rx="14" fill="#ffffff"/>
+              <rect x="880" y="120" width="8" height="200" rx="4" fill="#4f7343"/>
+              <text x="908" y="162" class="card-title">Reopen haul road H2?</text>
+              <text x="908" y="194" class="card-text">Fire 6 has stayed quiet for</text>
+              <text x="908" y="218" class="card-text">two photos in a row.</text>
+              <g id="btn-yes"><rect x="908" y="246" width="140" height="44" rx="8" fill="#1e2326"/><text x="978" y="274" text-anchor="middle" class="btn-text">Yes, reopen</text></g>
+              <rect x="1060" y="246" width="150" height="44" rx="8" fill="#fff" stroke="#1e2326" stroke-width="2"/><text x="1135" y="274" text-anchor="middle" class="btn-text dark">Keep closed</text>
+            </g>
+            <g id="cursor" transform="translate(1180 420)"><path d="M0 0 L0 30 L8 23 L14 36 L20 33 L14 21 L25 21 Z" fill="#fff" stroke="#1e2326" stroke-width="2" stroke-linejoin="round"/></g>
+            <circle id="click-ring" cx="978" cy="268" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+
+            <g id="hud">
+              <rect x="24" y="24" width="250" height="40" rx="8" fill="rgba(20,22,24,0.72)"/>
+              <circle cx="46" cy="44" r="6" fill="#d23f1d" id="rec-dot"/>
+              <text x="62" y="50" class="hud-text" id="hud-date">Landsat 9 &#183; 23 Dec 2025</text>
+            </g>
+
+            <g id="endcard">
+              <rect width="1280" height="720" fill="#1e2326" opacity="0.92"/>
+              <text x="640" y="320" text-anchor="middle" class="end-title">Fire Watch</text>
+              <text x="640" y="372" text-anchor="middle" class="end-sub">Every 8 days. Every fire. A person always decides to reopen.</text>
+            </g>
+          </svg>
+          <div class="caption" id="caption" aria-live="polite"><span class="cap-step" id="cap-step">1 / 6</span><span class="cap-text" id="cap-text">Every 8 days, a Landsat satellite photographs the Jharia coalfield.</span></div>
+          <button class="big-play" id="big-play" aria-label="Play the demo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+          <div class="end-actions" id="end-actions" hidden>
+            <a class="btn btn-go" href="/dashboard">Open the dashboard</a>
+            <button class="btn" id="replay">Watch again</button>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="ctl" id="toggle" aria-label="Play">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+          </button>
+          <div class="scrub" id="scrub" role="slider" aria-label="Demo progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="scrub-fill" id="scrub-fill"></div><div class="scrub-marks" id="scrub-marks"></div></div>
+          <span class="time" id="time">0:00</span>
+          <button type="button" class="save-video" id="save-video" hidden>Save as video</button>
+        </div>
+        <p class="sr-only" id="save-status" aria-live="polite"></p>
+        <ol class="chapters" id="chapters"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="start">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What brings you here?</h2>
+        <p>Pick the one that fits. Only the dashboard needs a sign-in.</p>
+      </div>
+      <div class="paths">
+        <a class="path" href="#roads">
+          <span class="path-icon i-road" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3 5 21M16 3l3 18M12 4v3M12 11v3M12 18v2"/></svg></span>
+          <span><h3>Is my road open?</h3><p>See which roads are closed right now because a fire is too close.</p><span class="path-tag">No sign-in needed</span></span>
+          <span class="path-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+        <a class="path" href="/dashboard">
+          <span class="path-icon i-officer" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <span><h3>I work on mine safety</h3><p>Review each fire, approve or refuse road closures, and reopen roads once a fire goes quiet.</p><span class="path-tag">Opens the dashboard, sign-in required</span></span>
+          <span class="path-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+        <a class="path" href="/help#tour">
+          <span class="path-icon i-tour" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/></svg></span>
+          <span><h3>I'm judging or exploring the project</h3><p>A five-minute guided tour of the key moments in the season, with what to click.</p><span class="path-tag">Guided tour</span></span>
+          <span class="path-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+        <a class="path" href="/help#how">
+          <span class="path-icon i-learn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg></span>
+          <span><h3>I want to understand how it works</h3><p>From satellite photo to road decision in four steps, in plain words.</p><span class="path-tag">Help guide</span></span>
+          <span class="path-arrow" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </div>
+      <p class="more-paths">Setting it up on your own computer? See <a href="/help#setup">running it with real data</a>. Something not working? See <a href="/help#trouble">troubleshooting</a>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="roads" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Road status now</h2>
+        <p>Roads closed because an underground fire is close to them. A closed road reopens only after a person checks it.</p>
+      </div>
+      <div class="roads-box">
+        <div class="roads-top">
+          <strong id="roads-count">Loading</strong>
+          <span id="roads-when"></span>
+          <input class="road-search" id="road-search" type="search" placeholder="Search a road name" aria-label="Search a road name">
+        </div>
+        <ul class="road-list" id="road-list"></ul>
+        <div class="roads-foot" id="roads-foot">Road names come from OpenStreetMap. Section codes such as R2-04 mark about 400 m of road.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section impact" id="impact" aria-labelledby="impact-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="impact-title">Why a fire under the ground closes a road</h2>
+        <p>Jharia's fires burn in coal seams below the surface. You can't see the flames, but the ground above them gets hot, cracks and sinks.</p>
+      </div>
+      <div class="impact-grid">
+        <figure class="sink">
+          <svg id="sink-svg" viewBox="0 0 640 340" role="img" aria-labelledby="sink-title sink-desc">
+            <title id="sink-title">Cross-section of the ground under a road</title>
+            <desc id="sink-desc">A burning coal seam below a road leaves empty space as it burns. The rock above sags into the gap and the road surface sinks and cracks.</desc>
+            <defs>
+              <linearGradient id="sk-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe7ea"/><stop offset="1" stop-color="#f1f3ee"/></linearGradient>
+              <radialGradient id="sk-burn"><stop offset="0" stop-color="#ffe9a8"/><stop offset="0.45" stop-color="#ff8a3d"/><stop offset="1" stop-color="#d23f1d" stop-opacity="0"/></radialGradient>
+              <pattern id="sk-rock" width="18" height="12" patternUnits="userSpaceOnUse"><rect width="18" height="12" fill="#b9ab8e"/><path d="M0 6h18M9 0v6M0 12V6M18 12V6" stroke="#a7987a" stroke-width="1"/></pattern>
+            </defs>
+            <rect width="640" height="340" fill="url(#sk-sky)"/>
+            <path id="sk-rockfill" d="M0 120 L160 120 C 240 120 270 120 320 120 C 370 120 400 120 480 120 L640 120 L640 340 L0 340 Z" fill="url(#sk-rock)"/>
+            <path id="sk-soil" d="M0 104 L160 104 C 240 104 270 104 320 104 C 370 104 400 104 480 104 L640 104 L640 122 L480 122 C 400 122 370 122 320 122 C 270 122 240 122 160 122 L0 122 Z" fill="#8c6f4e"/>
+            <rect x="0" y="236" width="640" height="34" fill="#25292b"/>
+            <text x="18" y="258" class="sk-label light">Coal seam</text>
+            <path id="sk-void" d="M250 236 C 280 236 360 236 390 236 L390 270 L250 270 Z" fill="#0d0f10"/>
+            <ellipse id="sk-burnglow" cx="320" cy="253" rx="70" ry="30" fill="url(#sk-burn)" opacity="0"/>
+            <g id="sk-cracks" stroke="#5c4b38" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0">
+              <path d="M290 236 L282 200 L292 170 L284 128"/><path d="M352 236 L360 196 L350 162 L358 126"/><path d="M322 236 L326 210 L318 188"/>
+            </g>
+            <g id="sk-heat" fill="none" stroke="#e2511f" stroke-width="3" stroke-linecap="round" opacity="0">
+              <path d="M284 96 c-6 -10 6 -16 0 -26 s6 -16 0 -26"/><path d="M320 92 c-6 -10 6 -16 0 -26 s6 -16 0 -26"/><path d="M358 96 c-6 -10 6 -16 0 -26 s6 -16 0 -26"/>
+            </g>
+            <path id="sk-road" d="M0 104 L160 104 C 240 104 270 104 320 104 C 370 104 400 104 480 104 L640 104" fill="none" stroke="#3b4043" stroke-width="10"/>
+            <path id="sk-lines" d="M0 104 L160 104 C 240 104 270 104 320 104 C 370 104 400 104 480 104 L640 104" fill="none" stroke="#f3eedd" stroke-width="1.6" stroke-dasharray="12 10"/>
+            <g id="sk-sat" opacity="0"><rect x="548" y="18" width="16" height="10" fill="#3f6e8c"/><rect x="584" y="18" width="16" height="10" fill="#3f6e8c"/><rect x="566" y="14" width="16" height="18" rx="2" fill="#5a636a"/><path d="M574 34 L 330 90" stroke="#3f6e8c" stroke-width="1.5" stroke-dasharray="4 5"/></g>
+            <g id="sk-truck" transform="translate(70 90)"><rect x="0" y="0" width="34" height="14" rx="2" fill="#e2b007" stroke="#3a2f00"/><rect x="34" y="2" width="14" height="12" rx="2" fill="#2b3134"/><circle cx="9" cy="16" r="4" fill="#1e2326"/><circle cx="40" cy="16" r="4" fill="#1e2326"/></g>
+            <g id="sk-barrier" opacity="0"><rect x="196" y="78" width="40" height="10" rx="2" fill="#fff" stroke="#9c2a10" stroke-width="2"/><path d="M202 78l-5 10M212 78l-5 10M222 78l-5 10M232 78l-5 10" stroke="#d23f1d" stroke-width="3"/><rect x="200" y="88" width="3" height="14" fill="#333"/><rect x="229" y="88" width="3" height="14" fill="#333"/></g>
+            <text x="18" y="96" class="sk-label">Road</text>
+            <text x="18" y="180" class="sk-label">Rock above the seam</text>
+          </svg>
+          <ol class="sink-steps" id="sink-steps">
+            <li><button type="button" data-step="0" aria-pressed="true"><b>The seam burns</b><span>Air leaks down through cracks, so the coal can smoulder for decades.</span></button></li>
+            <li><button type="button" data-step="1" aria-pressed="false"><b>Heat reaches the top</b><span>Burnt coal leaves empty space. Hot gas rises and the surface warms. This is what Landsat's heat camera sees.</span></button></li>
+            <li><button type="button" data-step="2" aria-pressed="false"><b>The ground sinks</b><span>The rock above has nothing left to rest on. It sags, and the road on top cracks or caves in.</span></button></li>
+          </ol>
+        </figure>
+        <figure class="area">
+          <h3>How much of Jharia is burning</h3>
+          <p class="area-sub">Fire area mapped from satellite heat images by the National Remote Sensing Centre (NRSC)</p>
+          <ul class="area-bars" id="area-bars">
+            <li><span class="yr">2009</span><span class="track"><i style="width:100%"></i></span><b>8.9 km²</b></li>
+            <li><span class="yr">2017</span><span class="track"><i style="width:36.9%"></i></span><b>3.28 km²</b></li>
+            <li><span class="yr">2020</span><span class="track"><i style="width:21.2%"></i></span><b>1.89 km²</b></li>
+            <li class="ours" id="area-ours" hidden><span class="yr" id="area-ours-yr">2026</span><span class="track"><i id="area-ours-bar"></i></span><b id="area-ours-val"></b></li>
+          </ul>
+          <p class="area-note" id="area-note">The mapped area has shrunk as burning coal is dug out, covered or flooded. What is left still lies close to roads, railways and homes.</p>
+          <p class="area-src">Source: NRSC figures in BCCL's <a href="https://www.bcclweb.in/masterplan/FireDrilling.pdf" target="_blank" rel="noopener">Jharia fire report</a>.</p>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>How it works</h2>
+        <p>Every 8 days a Landsat satellite passes over Jharia. Each new photo goes through four steps.</p>
+      </div>
+      <ol class="how-steps">
+        <li><h3>Satellite photo</h3><p>Landsat 8 and 9 take a heat (thermal) photo of the coalfield along with a normal one.</p></li>
+        <li><h3>Hot ground found</h3><p>OpenCV lines the photo up with earlier ones and finds ground hotter than it should be. Sun-warmed coal and factories are filtered out.</p></li>
+        <li><h3>Spread predicted</h3><p>Each fire is followed photo to photo, and Fire Watch predicts where it could reach in the next 48 days.</p></li>
+        <li><h3>Roads protected</h3><p>An AI agent closes a road only when a fire is clearly close. When unsure it asks a person, and only a person can reopen a road.</p></li>
+      </ol>
+      <p style="margin-top:22px"><a href="/help#how">Read the full explanation</a></p>
+    </div>
+  </section>
+
+  <section class="closer" aria-labelledby="closer-title">
+    <div class="wrap">
+      <h2 id="closer-title">Safer roads over a <em>burning coalfield.</em></h2>
+      <div class="ih-actions">
+        <a class="btn btn-light" href="/dashboard">Open the dashboard</a>
+        <a class="btn btn-ghost" href="#roads">Check road status</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Built for the OpenCV AI Competition 2026, on OpenCV 5 and AWS.</p>
+      <p class="right">Satellite data: Landsat 8 and 9 (USGS, NASA). Maps: &copy; OpenStreetMap contributors. <button type="button" class="linkish" data-about aria-haspopup="dialog" aria-controls="about-data">About the data</button></p>
+    </div>
+  </footer>
+
+
+  <dialog class="about" id="about-data" aria-labelledby="about-title">
+    <form method="dialog" class="about-close"><button class="ctl-x" aria-label="Close">&times;</button></form>
+    <h2 id="about-title">About the data</h2>
+    <p class="about-lead" id="about-lead">Everything on this site comes from free, public sources. Here is what they are and where they fall short.</p>
+    <dl class="about-list">
+      <dt>Satellite photos</dt>
+      <dd id="about-photos">Landsat 8 and 9 Collection 2 Level-2 scenes (USGS), read from Microsoft Planetary Computer. Each pass brings a surface temperature image and an ordinary colour photo.</dd>
+      <dt>Heat image</dt>
+      <dd>Landsat measures heat at 100 m and USGS delivers it on a 30 m grid. Fire Watch looks for ground at least 8 °C hotter than its surroundings once sun-warmed coal and bare ground are accounted for.</dd>
+      <dt>Roads, mines and plants</dt>
+      <dd id="about-osm">OpenStreetMap. Roads are cut into sections of about 400 m so a closure can be precise.</dd>
+      <dt>Fire area history</dt>
+      <dd>NRSC fire maps for 2009, 2017 and 2020, as published by BCCL.</dd>
+    </dl>
+    <h3>What it can't do</h3>
+    <ul class="about-limits">
+      <li>Landsat passes over Jharia at about 10:15 in the morning and sees heat at the surface, not the fire itself. A deep fire can be missed.</li>
+      <li>Cloud hides the ground. Fire Watch waits for a clear photo instead of guessing.</li>
+      <li>Coal dumps and dark ground warmed by the sun can look like fire. A person reviews anything doubtful.</li>
+      <li>This is a research project, not an official closure notice. Follow BCCL and district instructions on the ground.</li>
+    </ul>
+  </dialog>
+
+  <script src="/static/vendor/gsap.min.js"></script>
+  <script src="/static/vendor/three.min.js"></script>
+  <script src="/static/home.js"></script>
+  <script src="/static/home-demo.js"></script>
+  <script src="/static/home-sim.js"></script>
+  <script src="/static/impact.js"></script>
+</body>
+</html>

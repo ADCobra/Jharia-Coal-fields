@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jharia-fire-watch"
+version = "0.1.0"
+description = "Satellite thermal watch and road-safety agent for the Jharia coalfield, built on OpenCV 5 and AWS"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Jharia Fire Watch authors" }]
+dependencies = [
+    "opencv-contrib-python-headless>=5.0.0",
+    "numpy>=2.0",
+    "rasterio>=1.4",
+    "pyproj>=3.6",
+    "shapely>=2.0",
+    "pystac-client>=0.8",
+    "boto3>=1.34",
+    "networkx>=3.2",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    "PyYAML>=6.0",
+    "langgraph>=0.2",
+    "httpx>=0.27",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "moto[s3,dynamodb,sns,sqs,logs,cloudwatch]>=5.0", "onnx>=1.17"]
+
+[project.scripts]
+firewatch = "firewatch.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+firewatch = ["defaults.yaml", "api/static/*", "api/static/vendor/*", "api/static/vendor/images/*", "api/static/vendor/fonts/*", "evaluation/scenarios/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

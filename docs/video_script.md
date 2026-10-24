@@ -1,0 +1,17 @@
+# Five-minute video: shot list
+
+Screen recording of the dashboard and a terminal, with voice-over. Times are targets. A captioned, silent cut of the same story (`walkthrough.mp4`, about two minutes, shipped next to the repository rather than in it) can stand in if there is no time to record a voice.
+
+| Time | Screen | Say |
+| --- | --- | --- |
+| 0:00–0:25 | Map of the coalfield, LST layer on | Jharia has had underground coal fires since 1916. NRSC mapped about 1.9 km² still burning in 2020. The ground above them settles and roads crack. Landsat sees the heat every 8 days. |
+| 0:25–0:50 | `firewatch demo` scrolling in the terminal | One command processes each pass: temperature from band 10, two independent alignments, hotspots, tracks, a 48-day spread cone, then the agent. This is a synthetic coalfield with known fires, so every number can be checked. |
+| 0:50–1:40 | Dashboard on 5 Nov 2025, Fire 6 selected, spread outline visible | High risk, 436 m from haul road H2, cone reaching 247 m. The agent checked Sentinel-2, found hot pixels, and still asked a person, because only the projection reaches the road and the next pass comes first. Show the decision card. |
+| 1:40–2:20 | Step to 23 Dec 2025, roads turn red and trucks stop, then open Fire 6 | Now the fire is 218 m away. The agent closes three segments by itself and sends one alert with the detour. Scroll to "What Fire Watch did". |
+| 2:20–2:45 | 4 Oct 2025, coke-oven hotspot log | The hottest thing on the map is a coke oven. OpenCV's contour gives it a rectangular, solid footprint on a mapped plant, so the agent checks for industry first and never treats it as a fire. |
+| 2:45–3:10 | 25 Feb 2026, the reopen card under "Needs your decision", approve it, then press Play | Two quiet passes after the fire was put out, the agent proposes reopening. It is not allowed to reopen anything. A person approves; the route comes back. Here is the whole season, written as one animated WebP by OpenCV 5. |
+| 3:10–3:40 | `reports/alignment.png`, then `docs/opencv5.md` | We expected OpenCV 5's learned matcher to win. On our tests SIFT was the most accurate and survived a dry-season pair that broke ALIKED + LightGlue, so SIFT is primary, ALIKED + LightGlue checks every pass, and DISK settles disagreements. |
+| 3:40–4:05 | `reports/detection.png`, `reports/forecast.png` | We built a second coalfield after tuning and held it out. Its first run found false alarms on a pond shore, which we fixed. The 48-day cone covers more of where a moving fire went than a circle of the same area, but it is too wide. |
+| 4:05–4:30 | Architecture diagram, then CloudWatch log stream and the SNS email | On AWS: USGS scene notifications through SQS to a Graviton worker, state in S3 and DynamoDB, alerts by SNS, the planner on Bedrock, every agent step in CloudWatch. |
+| 4:30–4:50 | `reports/agent.md` table | 36 scripted situations: 35 match a safety officer's call. The first run caught the agent closing a road for a fire 500 m away and ignoring a real fire next to a coke plant; both fixed. The one left sends an unmapped plant to a person. |
+| 4:50–5:00 | README "What is not proven yet" | Not yet run on real Landsat scenes. That is the next step, and the NRSC and FIRMS comparisons are ready for it. |

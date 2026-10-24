@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install
+        run: |
+          pip install -r requirements-dev.txt
+          pip install --no-deps -e .
+      - uses: actions/cache@v4
+        with:
+          path: models
+          key: models-${{ hashFiles('src/firewatch/model_zoo.py') }}
+      - name: Models
+        run: firewatch download-models
+      - name: Tests
+        run: pytest
+      - name: Agent, detection and forecast evaluation
+        run: |
+          firewatch eval agent --out ci-reports
+          firewatch eval detection --out ci-reports
+          firewatch eval forecast --out ci-reports
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: ci-reports
+
+  image-arm64:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Graviton image
+        run: docker build -t jharia-fire-watch:ci .
+      - name: Smoke test
+        run: docker run --rm jharia-fire-watch:ci firewatch capabilities

@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==9.1.1
+moto[s3,dynamodb,sns,sqs,logs,cloudwatch]==5.2.4
+onnx==1.23.2

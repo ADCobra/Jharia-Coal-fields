@@ -1,0 +1,23 @@
+data:
+  source: synthetic
+
+storage:
+  backend: s3
+  prefix: firewatch
+
+state:
+  backend: dynamodb
+
+notify:
+  backend: sns
+
+observability:
+  log_group: /firewatch/agent
+  metrics_namespace: FireWatch
+
+agent:
+  planner: bedrock
+  bedrock_model_id: us.amazon.nova-lite-v1:0
+
+aws:
+  region: us-west-2

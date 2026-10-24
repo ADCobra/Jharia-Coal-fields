@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Help · Jharia Fire Watch</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="nav-brand" href="/">Jharia Fire Watch</a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="/#roads" class="hide-sm">Road status</a>
+        <a href="/help" aria-current="page">Help</a>
+        <a class="btn btn-go" href="/dashboard">Open dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap help-layout">
+    <aside class="toc" aria-label="On this page">
+      <input class="help-search" id="help-search" type="search" placeholder="Search help" aria-label="Search help">
+      <p>On this page</p>
+      <ol id="toc">
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#dashboard">Using the dashboard</a></li>
+        <li><a href="#decisions">Making decisions</a></li>
+        <li><a href="#tour">Guided tour</a></li>
+        <li><a href="#setup">Running it yourself</a></li>
+        <li><a href="#glossary">Words explained</a></li>
+        <li><a href="#faq">Questions</a></li>
+        <li><a href="#trouble">Troubleshooting</a></li>
+      </ol>
+    </aside>
+
+    <main class="help-body" id="help-body">
+      <div class="help-title">
+        <h1>Help</h1>
+        <p>Everything about Jharia Fire Watch: what it does, how to read the dashboard, and how to run it.</p>
+      </div>
+      <p class="no-match" id="no-match" hidden>Nothing in the help matches that search.</p>
+
+      <section id="start">
+        <h2>Getting started</h2>
+        <p>Jharia Fire Watch watches the underground coal fires of the Jharia coalfield in Jharkhand from space. Every time a Landsat satellite photographs the area, it finds the hot ground, follows each fire over time, predicts where it is heading and decides what to do about the roads above it.</p>
+        <h3>Who it's for</h3>
+        <ul>
+          <li><b>People who use the roads:</b> check <a href="/#roads">Road status</a> on the homepage. No sign-in needed.</li>
+          <li><b>Mine safety staff:</b> open the <a href="/dashboard">dashboard</a> to review fires and approve or refuse road closures.</li>
+          <li><b>Judges and visitors:</b> follow the <a href="#tour">guided tour</a>.</li>
+        </ul>
+        <h3>Signing in</h3>
+        <p>The dashboard asks for a user name and password. On the demo they are <code>demo</code> and <code>demo</code>. Your browser remembers them until you close it.</p>
+      </section>
+
+      <section id="how">
+        <h2>How it works</h2>
+        <p>Landsat 8 and Landsat 9 pass over Jharia every 8 days between them. Each new photo goes through four steps, the same four shown along the top of the dashboard.</p>
+        <h3>1. Satellite photo</h3>
+        <p>Along with a normal colour photo, Landsat records heat (its thermal band). Fire Watch turns that into ground temperature and uses the photo's cloud mask to ignore anything under cloud.</p>
+        <h3>2. Hot ground found</h3>
+        <p>First the new photo is lined up with earlier ones, because a shift of one pixel would look like a fire moving 30 m. OpenCV does this twice, with two independent methods, and checks that they agree. Then Fire Watch works out how hot each spot <em>should</em> be: dark coal and bare dumps warm up in the sun, so heat explained by the surface is removed. What is left, ground hotter than it should be, is a hot spot. Factories and coke ovens are recognised by their neat rectangular shape, extreme heat and mapped location, and ignored.</p>
+        <h3>3. Spread predicted</h3>
+        <p>Each hot spot is matched to the same fire on earlier photos, so Fire Watch knows whether it is growing and which way it is moving. It then runs a small simulation 24 times to predict where the fire could reach in the next 48 days. That area is drawn on the map as a dashed outline.</p>
+        <h3>4. Roads protected</h3>
+        <p>An AI agent looks at each fire, gathers more evidence if it needs to (older photos, a sharper Sentinel-2 photo, a third alignment check) and decides one of four things: close the road, ask a person, keep watching, or ignore it as factory heat. See <a href="#decisions">Making decisions</a> for the safety rules.</p>
+      </section>
+
+      <section id="dashboard">
+        <h2>Using the dashboard</h2>
+        <p>The dashboard opens on the latest photo. Everything on screen describes the date shown at the top.</p>
+        <div class="parts">
+          <div class="part"><b>Date and arrows</b><span>The date of the satellite photo you are looking at. Use the arrows, or the left and right arrow keys, to move between photos. The sentence beside it says what happened on that date.</span></div>
+          <div class="part"><b>The four steps</b><span>A summary of that photo: how clear it was, how many hot spots were found, how many fires could reach a road, and which roads are closed. Click a step to change the map.</span></div>
+          <div class="part"><b>Map: Photo, Heat, Temperature</b><span>Photo shows the ground. Heat shows ground hotter than it should be (yellow to red). Temperature shows the measured ground temperature.</span></div>
+          <div class="part"><b>On the map</b><span>Fires are labelled (Fire 6, Fire 7) and coloured by risk: red near a road, yellow being watched, blue factory heat. Dashed outlines show where a fire may spread in 48 days. Closed roads are red with barriers. Coal trucks drive their routes, take a detour or wait at the mine with a red "!" when their road is shut.</span></div>
+          <div class="part"><b>Needs your decision</b><span>Questions only a person can answer, at the top of the side panel. See <a href="#decisions">Making decisions</a>.</span></div>
+          <div class="part"><b>Fires on this date</b><span>Every fire in one sentence, most urgent first. Click one for a plain summary, its size and heat, a chart of its size over time, and each step Fire Watch took. "Technical details" holds the scores.</span></div>
+          <div class="part"><b>Dots along the bottom</b><span>One dot per photo, in date order. Red means a high-risk fire, yellow medium, grey low. A red ring means a road was closed. Play steps through the whole season.</span></div>
+          <div class="part"><b>Roads and trucks</b><span>Which road sections are closed now, and how each truck route is affected.</span></div>
+          <div class="part"><b>Photo quality</b><span>For experts: cloud cover, which alignment method was used, how much error was left and whether the second method agreed.</span></div>
+        </div>
+      </section>
+
+      <section id="decisions">
+        <h2>Making decisions</h2>
+        <div class="callout safe"><p><b>The one rule that never changes:</b> Fire Watch may close a road on its own, but it can never reopen one. Only a person can.</p></div>
+        <h3>When Fire Watch closes a road by itself</h3>
+        <p>All of these must be true: the fire is high risk, it is close to the road, Fire Watch is at least 70% confident in the measurement, and it is not under a cloud edge. A separate safety check repeats these tests before anything happens.</p>
+        <p>On real Landsat data "close" means within 100 m, because roads in Jharia are packed tightly around the mines, and the agent only closes mine haul roads by itself. A public road or highway always comes to you. On the demo data the distance is 250 m.</p>
+        <h3>When it asks you</h3>
+        <ul>
+          <li>The fire isn't at the road yet, but its predicted spread reaches it. The next photo arrives before the fire would.</li>
+          <li>It is medium risk, or half hidden by cloud, or the measurement is doubtful.</li>
+          <li>On real data, the road at risk is a public road rather than a mine haul road.</li>
+          <li>A fire that was closed has stayed quiet for two clear photos, so it suggests reopening the road.</li>
+        </ul>
+        <h3>What the buttons do</h3>
+        <ul>
+          <li><b>Yes, close it</b> closes the road sections listed. Barriers go up on the map and trucks re-route.</li>
+          <li><b>Not now</b> or <b>Dismiss</b> records your answer and leaves the road as it is. Fire Watch will ask again only if the risk goes up.</li>
+          <li><b>Yes, reopen</b> opens the sections again and brings the trucks back. <b>Keep closed</b> leaves them shut.</li>
+          <li><b>Add a note</b> saves a short reason with your decision, so others can see why.</li>
+        </ul>
+        <p>Every decision is recorded with who made it and when.</p>
+      </section>
+
+      <section id="tour">
+        <h2>Guided tour</h2>
+        <p>Five minutes on the demo season. Open the <a href="/dashboard">dashboard</a> and use the dots along the bottom to jump to each date.</p>
+        <ol class="tour">
+          <li><b>4 October 2025: factory heat</b>Open "Factory heat" in the fire list. The hottest thing on the map is a coke oven, and Fire Watch checked for a factory before anything else because of its rectangular shape.</li>
+          <li><b>5 November 2025: asking first</b>Open Fire 6 near the pit 2 haul road. It is 436 m from the road, but its predicted spread reaches 247 m, so Fire Watch asked a person instead of closing.</li>
+          <li><b>23 December 2025: closing</b>Fire 6 is now 218 m away. Fire Watch closed three sections of the haul road itself. Barriers go up and the trucks from pit 2 wait.</li>
+          <li><b>25 February 2026 and later: reopening</b>The fire has gone quiet. A reopen suggestion appears under "Needs your decision". Approve it and the road and trucks come back.</li>
+          <li><b>Play the season</b>Press Play at the bottom left to watch every photo in order, or switch the map to Heat first.</li>
+        </ol>
+      </section>
+
+      <section id="setup">
+        <h2>Running it yourself</h2>
+        <p>Fire Watch runs on a laptop with no GPU and no AWS account. It needs Python 3.12 or newer.</p>
+        <h3>With real Landsat data (Mac)</h3>
+        <p>In Terminal, inside the project folder:</p>
+        <pre><code>bash get_real_data.sh</code></pre>
+        <p>This downloads the Jharia part of every clear Landsat 8 and 9 photo from the last 12 months (free, from Microsoft Planetary Computer, no account needed), plus roads, mines and plants from OpenStreetMap. It is about 400 to 500 MB. If it stops, run it again and it carries on.</p>
+        <pre><code>bash run_real.sh</code></pre>
+        <p>This installs everything, processes the photos and opens the homepage at <code>http://localhost:8000</code>.</p>
+        <h3>With the demo data</h3>
+        <pre><code>python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+pip install -r requirements-dev.txt &amp;&amp; pip install --no-deps -e .
+firewatch download-models
+firewatch demo --fresh
+firewatch serve</code></pre>
+        <p>To watch the agent work one photo at a time, start with <code>firewatch demo --fresh --passes 1</code> and press "Process next photo" in the dashboard.</p>
+      </section>
+
+      <section id="glossary">
+        <h2>Words explained</h2>
+        <dl class="glossary">
+          <dt>Landsat</dt><dd>A pair of NASA and USGS satellites (8 and 9) that photograph every place on Earth, together every 8 days.</dd>
+          <dt>Thermal band</dt><dd>The part of a Landsat photo that records heat instead of light.</dd>
+          <dt>Hot spot</dt><dd>A patch of ground hotter than it should be on one photo.</dd>
+          <dt>Fire (Fire 6)</dt><dd>The same hot spot followed across photos. The number stays the same for the whole season.</dd>
+          <dt>Heat above normal</dt><dd>How much hotter a spot is than its surroundings, after removing the heat the sun explains, in °C.</dd>
+          <dt>Spread prediction</dt><dd>The area a fire could reach in the next 48 days, drawn as a dashed outline.</dd>
+          <dt>Risk</dt><dd>High, medium or low, from how hot the fire is, how fast it is growing or moving, and how close it or its spread is to a road.</dd>
+          <dt>Confidence</dt><dd>How sure Fire Watch is about the measurement. Cloud, a poor alignment or a first sighting lower it.</dd>
+          <dt>Road section</dt><dd>About 400 m of road with a code such as R2-04 or H2-04. Roads are closed one section at a time.</dd>
+          <dt>Factory heat</dt><dd>Heat from coke ovens, power plants and other industry. Recognised and ignored, so it doesn't cause false alarms.</dd>
+          <dt>Agent</dt><dd>The part of Fire Watch that decides what to do about each fire, and records why.</dd>
+          <dt>Demo data</dt><dd>A computer-made coalfield with known fires, used to test that every number is right. The badge at the top says which data you are looking at.</dd>
+        </dl>
+      </section>
+
+      <section id="faq" class="faq">
+        <h2>Questions</h2>
+        <details><summary>Is this real data?</summary><div><p>The badge in the dashboard header says which. "Real Landsat data" means real satellite photos of Jharia. "Demo data" means a simulated coalfield used for testing.</p></div></details>
+        <details><summary>How often is it updated?</summary><div><p>Every time Landsat passes over, about every 8 days. Cloudy photos are skipped, so in the monsoon there are fewer.</p></div></details>
+        <details><summary>Why is my road closed?</summary><div><p>A fire is close to it (100 m on real data) and Fire Watch is confident, or a person approved the closure. Open the dashboard and click the fire next to the road to see why.</p></div></details>
+        <details><summary>Why wasn't a road closed when a fire is near it?</summary><div><p>Either Fire Watch wasn't confident enough (for example because of cloud) and asked a person, or the fire is near the road only on the prediction. Both show under "Needs your decision".</p></div></details>
+        <details><summary>Can Fire Watch reopen a road by itself?</summary><div><p>No. It can only suggest reopening after two quiet photos. A person has to approve it.</p></div></details>
+        <details><summary>How accurate is it?</summary><div><p>On the simulated coalfields, which have known answers, it found 86 to 97% of fire sightings with no false alarms, and its temperatures were off by about 0.1 °C on average. Very young fires, less than about 4 °C hotter than their surroundings, are missed until they grow. The full results are in the project's reports folder.</p></div></details>
+        <details><summary>Can it see through cloud?</summary><div><p>No. Ground under cloud is left out, and a fire half under cloud is sent to a person.</p></div></details>
+      </section>
+
+      <section id="trouble">
+        <h2>Troubleshooting</h2>
+        <h3>The dashboard keeps asking for a password</h3>
+        <p>Use the user name and password from the configuration. On the demo both are <code>demo</code>.</p>
+        <h3>The map around the coalfield is grey</h3>
+        <p>The satellite map outside the coalfield comes from the internet. Without a connection only the coalfield photo shows.</p>
+        <h3>"No photos yet"</h3>
+        <p>Nothing has been processed. Run <code>firewatch demo --fresh</code>, or for real data <code>bash get_real_data.sh</code> and then <code>bash run_real.sh</code>.</p>
+        <h3>"Needs Python 3.12 or newer"</h3>
+        <p>Install Python from <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> or with <code>brew install python@3.13</code>, then run the script again.</p>
+        <h3>The download stopped halfway</h3>
+        <p>Run <code>bash get_real_data.sh</code> again. Finished photos are kept and it carries on from where it stopped.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p><a href="/">Home</a> &middot; <a href="/dashboard">Dashboard</a></p>
+      <p class="right">Satellite data: Landsat 8 and 9 (USGS, NASA). Maps: &copy; OpenStreetMap contributors.</p>
+    </div>
+  </footer>
+
+  <script src="/static/help.js"></script>
+</body>
+</html>

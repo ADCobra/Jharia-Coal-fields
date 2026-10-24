@@ -1,0 +1,34 @@
+data:
+  source: real
+  real_dir: data/real
+
+roads:
+  path: data/real/derived/roads.geojson
+  routes: data/real/derived/routes.yaml
+  auto_close: haul
+
+masks:
+  industrial: data/real/derived/industrial.geojson
+
+storage:
+  root: var/real/blobs
+
+state:
+  sqlite_path: var/real/state.db
+
+notify:
+  outbox: var/real/outbox.jsonl
+
+hotspots:
+  sigma_high: 4.0
+  sigma_low: 2.5
+  min_contrast_k: 8.0
+  min_weak_contrast_k: 4.0
+  persist_sigma: 3.0
+  persist_contrast_k: 5.0
+
+tracking:
+  position_noise_m: 90
+
+risk:
+  close_buffer_m: 100

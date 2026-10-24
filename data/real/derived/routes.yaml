@@ -1,0 +1,42 @@
+- name: Cluster 8 and Cluster 9 Coal Mines to BCCL Powerhouse
+  from:
+  - 86.438276
+  - 23.732064
+  to:
+  - 86.470394
+  - 23.807832
+- name: Cluster 11 and Cluster 7 (BCCL) Coal Mines to BCCL Powerhouse
+  from:
+  - 86.398047
+  - 23.768442
+  to:
+  - 86.470394
+  - 23.807832
+- name: Open-cast mine 1 to Chandrapura Thermal Power Station
+  from:
+  - 86.19956
+  - 23.777714
+  to:
+  - 86.124371
+  - 23.738015
+- name: Muraidih coal mine to Chandrapura Thermal Power Station
+  from:
+  - 86.239857
+  - 23.795638
+  to:
+  - 86.124371
+  - 23.738015
+- name: Amalgamated Keshalpur-West Mudidih (AKWMC) Coal Mine to BCCL Powerhouse
+  from:
+  - 86.318792
+  - 23.804605
+  to:
+  - 86.470394
+  - 23.807832
+- name: Tetulmari coal mine to BCCL Powerhouse
+  from:
+  - 86.34915
+  - 23.799591
+  to:
+  - 86.470394
+  - 23.807832

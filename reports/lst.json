@@ -1,0 +1,137 @@
+{
+  "synthetic": [
+    {
+      "scene_id": "SYN_-003_20250817",
+      "against": "known surface temperature",
+      "pixels": 1164115,
+      "bias_k": -0.003447263967245817,
+      "mae_k": 0.09912751615047455,
+      "rmse_k": 0.13394619524478912,
+      "p95_abs_k": 0.239532470703125
+    },
+    {
+      "scene_id": "SYN_-003_20250817",
+      "against": "synthetic Level-2 product",
+      "pixels": 1164115,
+      "bias_k": -0.003305286169052124,
+      "mae_k": 0.22367548942565918,
+      "rmse_k": 0.28311407566070557,
+      "p95_abs_k": 0.55078125
+    },
+    {
+      "scene_id": "SYN_-002_20250902",
+      "against": "known surface temperature",
+      "pixels": 1168948,
+      "bias_k": -0.0038325157947838306,
+      "mae_k": 0.09894033521413803,
+      "rmse_k": 0.1333344727754593,
+      "p95_abs_k": 0.239044189453125
+    },
+    {
+      "scene_id": "SYN_-002_20250902",
+      "against": "synthetic Level-2 product",
+      "pixels": 1168948,
+      "bias_k": -0.0036176545545458794,
+      "mae_k": 0.22419317066669464,
+      "rmse_k": 0.28362616896629333,
+      "p95_abs_k": 0.551727294921875
+    },
+    {
+      "scene_id": "SYN_-001_20250918",
+      "against": "known surface temperature",
+      "pixels": 1165709,
+      "bias_k": -0.003506188513711095,
+      "mae_k": 0.09891587495803833,
+      "rmse_k": 0.13322384655475616,
+      "p95_abs_k": 0.239105224609375
+    },
+    {
+      "scene_id": "SYN_-001_20250918",
+      "against": "synthetic Level-2 product",
+      "pixels": 1165709,
+      "bias_k": -0.003426735755056143,
+      "mae_k": 0.22390957176685333,
+      "rmse_k": 0.28319135308265686,
+      "p95_abs_k": 0.550811767578125
+    },
+    {
+      "scene_id": "SYN_+000_20251004",
+      "against": "known surface temperature",
+      "pixels": 1168948,
+      "bias_k": -0.003460884327068925,
+      "mae_k": 0.09891792386770248,
+      "rmse_k": 0.1330404430627823,
+      "p95_abs_k": 0.239593505859375
+    },
+    {
+      "scene_id": "SYN_+000_20251004",
+      "against": "synthetic Level-2 product",
+      "pixels": 1168948,
+      "bias_k": -0.0033579678274691105,
+      "mae_k": 0.22374917566776276,
+      "rmse_k": 0.2831336259841919,
+      "p95_abs_k": 0.5517578125
+    },
+    {
+      "scene_id": "SYN_+001_20251020",
+      "against": "known surface temperature",
+      "pixels": 1165441,
+      "bias_k": -0.003391715930774808,
+      "mae_k": 0.09898863732814789,
+      "rmse_k": 0.1329290270805359,
+      "p95_abs_k": 0.23956298828125
+    },
+    {
+      "scene_id": "SYN_+001_20251020",
+      "against": "synthetic Level-2 product",
+      "pixels": 1165441,
+      "bias_k": -0.0033408792223781347,
+      "mae_k": 0.223740354180336,
+      "rmse_k": 0.2829282283782959,
+      "p95_abs_k": 0.550506591796875
+    },
+    {
+      "scene_id": "SYN_+002_20251105",
+      "against": "known surface temperature",
+      "pixels": 1166360,
+      "bias_k": -0.0036414219066500664,
+      "mae_k": 0.09885302931070328,
+      "rmse_k": 0.13272961974143982,
+      "p95_abs_k": 0.239105224609375
+    },
+    {
+      "scene_id": "SYN_+002_20251105",
+      "against": "synthetic Level-2 product",
+      "pixels": 1166360,
+      "bias_k": -0.004031372256577015,
+      "mae_k": 0.22388699650764465,
+      "rmse_k": 0.2830697298049927,
+      "p95_abs_k": 0.55126953125
+    },
+    {
+      "scene_id": "SYN_+003_20251121",
+      "against": "known surface temperature",
+      "pixels": 1168948,
+      "bias_k": -0.003561600111424923,
+      "mae_k": 0.09879857301712036,
+      "rmse_k": 0.13274681568145752,
+      "p95_abs_k": 0.238739013671875
+    },
+    {
+      "scene_id": "SYN_+003_20251121",
+      "against": "synthetic Level-2 product",
+      "pixels": 1168948,
+      "bias_k": -0.0034979088231921196,
+      "mae_k": 0.2236037254333496,
+      "rmse_k": 0.28275853395462036,
+      "p95_abs_k": 0.55023193359375
+    }
+  ],
+  "environment": {
+    "time": "2026-10-22T05:20:01.581249+00:00",
+    "python": "3.13.16",
+    "machine": "x86_64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

@@ -1,0 +1,167 @@
+aoi:
+  name: jharia
+  bbox: [86.10, 23.63, 86.50, 23.86]
+  crs: EPSG:32645
+  resolution_m: 30
+
+data:
+  source: synthetic
+  landsat_stac_url: https://landsatlook.usgs.gov/stac-server
+  landsat_l1_collection: landsat-c2l1
+  landsat_l2_collection: landsat-c2l2-st
+  sentinel_stac_url: https://earth-search.aws.element84.com/v1
+  sentinel_collection: sentinel-2-l2a
+  platforms: [LANDSAT_8, LANDSAT_9]
+  max_cloud: 60
+  months: [1, 2, 3, 4, 5, 10, 11, 12]
+  min_sun_elevation: 15
+  requester_pays: true
+  prefer_s3: true
+  history_lookback_days: 400
+  sentinel_window_days: 6
+  real_dir: data/real
+  synthetic:
+    seed: 7
+    scale: 1.0
+    pass_interval_days: 16
+    start_date: "2025-10-04"
+
+thermal:
+  wavelength_um: 10.895
+  emissivity_soil: 0.966
+  emissivity_vegetation: 0.986
+  emissivity_water: 0.991
+  ndvi_soil: 0.2
+  ndvi_vegetation: 0.5
+  cavity_shape_factor: 0.55
+  detrend: true
+  detrend_sample: 200000
+  psf_sigma_px: 1.4
+
+hotspots:
+  background_window_px: 61
+  sigma_high: 3.0
+  sigma_low: 1.8
+  min_contrast_k: 4.0
+  min_weak_contrast_k: 1.5
+  min_area_px: 6
+  cloud_ring_px: 3
+  cloud_edge_fraction: 0.15
+  water_buffer_px: 2
+  max_vertices: 64
+  persistence: true
+  persist_sigma: 2.0
+  persist_contrast_k: 2.5
+  persist_min_area_px: 4
+  persist_reach_px: 2
+
+alignment:
+  method: auto
+  preference: [sift, aliked_lightglue, disk, orb]
+  estimator: accurate
+  cross_check: true
+  check_preference: [aliked_lightglue, sift, orb]
+  max_disagreement_px: 0.75
+  tiebreak_preference: [disk, aliked_lightglue, sift, orb]
+  tiebreak_window_px: 640
+  band: nir08
+  models_dir: models
+  aliked_model: aliked-n16rot-top1k-640.onnx
+  lightglue_model: aliked_lightglue.onnx
+  disk_model: disk.onnx
+  max_features: 4000
+  ransac_threshold_px: 1.5
+  min_inliers: 25
+  max_residual_px: 0.6
+  ratio_test: 0.78
+
+tracking:
+  max_match_distance_m: 450
+  max_missed_passes: 2
+  history_points: 8
+
+projection:
+  horizon_days: 48
+  ensemble: 24
+  crop_px: 160
+  velocity_sigma_frac: 0.35
+  diffusivity_sigma_frac: 0.5
+  max_diffusivity_m2_per_day: 900
+  footprint_contrast_k: 2.0
+  cone_probability: 0.2
+  seed: 11
+
+risk:
+  weights: {anomaly: 0.35, spread: 0.30, proximity: 0.35}
+  anomaly_ref_k: 12.0
+  growth_ref_frac_per_30d: 0.5
+  approach_ref_m_per_day: 3.0
+  d0_m: 400
+  high: 0.62
+  medium: 0.40
+  consider: 0.25
+  min_confidence_auto: 0.7
+  close_buffer_m: 250
+  precedent_min_analogues: 3
+  precedent_min_tracks: 2
+
+roads:
+  path: null
+  routes: auto
+  haul_only_closures: false
+  auto_close: all
+  reopen_quiet_passes: 2
+
+agent:
+  planner: policy
+  max_steps_per_hotspot: 5
+  allow_auto_close: true
+  bedrock_model_id: us.amazon.nova-lite-v1:0
+  history_passes: 4
+  highres_buffer_m: 300
+  dashboard_url: http://localhost:8000
+
+vlm:
+  enabled: false
+  siglip_model: null
+  embedding_model: null
+  gemma_model: null
+  tokenizer_config: null
+  max_new_tokens: 12
+
+masks:
+  industrial: null
+
+storage:
+  backend: local
+  root: var/blobs
+  bucket: null
+  prefix: firewatch
+
+state:
+  backend: sqlite
+  sqlite_path: var/state.db
+  table: null
+
+notify:
+  backend: console
+  topic_arn: null
+  outbox: var/outbox.jsonl
+
+observability:
+  log_group: null
+  metrics_namespace: null
+
+api:
+  user: demo
+  password: demo
+  allow_runs: true
+  scenery: true
+
+aws:
+  region: us-west-2
+
+worker:
+  queue_url: null
+  wait_seconds: 20
+  path_rows: []

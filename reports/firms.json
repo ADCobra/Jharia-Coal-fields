@@ -1,0 +1,10 @@
+{
+  "csv": null,
+  "environment": {
+    "time": "2026-10-22T05:37:34.885827+00:00",
+    "python": "3.13.16",
+    "machine": "x86_64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

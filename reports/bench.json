@@ -1,0 +1,126 @@
+{
+  "machine": {
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "cpus": 2,
+    "system": "Linux",
+    "opencv_threads": 2,
+    "opencv": "5.0.0"
+  },
+  "pipeline": {
+    "grid": "1364 x 857 px",
+    "passes": 4,
+    "median_pass_seconds": 7.25,
+    "stages": {
+      "load": 0.233,
+      "thermal": 0.059,
+      "align": 4.361,
+      "warp": 0.028,
+      "anomaly": 0.328,
+      "hotspots": 0.042,
+      "tracking": 0.009,
+      "assess": 0.342,
+      "agent": 0.05,
+      "persist": 1.51
+    },
+    "method": "sift"
+  },
+  "matchers": [
+    {
+      "method": "sift",
+      "image_px": 768,
+      "median_seconds": 0.649
+    },
+    {
+      "method": "aliked_lightglue",
+      "image_px": 768,
+      "median_seconds": 3.337
+    },
+    {
+      "method": "disk",
+      "image_px": 768,
+      "median_seconds": 19.81
+    },
+    {
+      "method": "orb",
+      "image_px": 768,
+      "median_seconds": 0.219
+    }
+  ],
+  "engines": [
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_NEW",
+      "input_px": 640,
+      "load_seconds": 0.026,
+      "ok": true,
+      "forward_seconds": 1.113
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_ORT",
+      "input_px": 640,
+      "load_seconds": 0.094,
+      "ok": true,
+      "forward_seconds": 1.053
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_CLASSIC",
+      "input_px": 640,
+      "ok": false,
+      "error": "Unsqueeze node: Multidimensional unsqueeze"
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_AUTO",
+      "input_px": 640,
+      "load_seconds": 0.064,
+      "ok": true,
+      "forward_seconds": 1.034
+    },
+    {
+      "model": "DISK",
+      "engine": "ENGINE_NEW",
+      "input_px": 1024,
+      "load_seconds": 0.08,
+      "ok": true,
+      "forward_seconds": 10.041
+    },
+    {
+      "model": "DISK",
+      "engine": "ENGINE_ORT",
+      "input_px": 1024,
+      "load_seconds": 0.13,
+      "ok": true,
+      "forward_seconds": 11.414
+    },
+    {
+      "model": "DISK",
+      "engine": "ENGINE_CLASSIC",
+      "input_px": 1024,
+      "ok": false,
+      "error": "Shape node: !isDynamicShape"
+    },
+    {
+      "model": "DISK",
+      "engine": "ENGINE_AUTO",
+      "input_px": 1024,
+      "load_seconds": 0.087,
+      "ok": true,
+      "forward_seconds": 10.678
+    }
+  ],
+  "build": {
+    "Lapack": "YES (OpenBLAS /usr/lib64/libopenblasp.so)",
+    "DNN MLAS": "YES (SGEMM-only, vendored)",
+    "ONNX Runtime": "NO"
+  },
+  "environment": {
+    "time": "2026-10-22T05:41:40.558490+00:00",
+    "python": "3.13.16",
+    "machine": "x86_64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

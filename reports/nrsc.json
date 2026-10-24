@@ -1,0 +1,202 @@
+{
+  "references": [
+    {
+      "label": "2017",
+      "area_km2": 3.28,
+      "start": "2017-01-01",
+      "end": "2017-06-30",
+      "note": "NRSC coal fire study, 2017 baseline (whole coalfield)",
+      "passes": 0
+    },
+    {
+      "label": "2020",
+      "area_km2": 1.89,
+      "start": "2020-01-01",
+      "end": "2021-05-31",
+      "note": "NRSC coal fire study, Landsat-8 band 10, 2020 period (the summary cites May 2021 data)",
+      "passes": 0
+    },
+    {
+      "label": "2025-11 to 2026-10 against 2020",
+      "area_km2": 1.89,
+      "start": "2025-11-04",
+      "end": "2026-10-14",
+      "note": "processed season compared with the latest published NRSC figure (2020); years apart, so only a range check",
+      "passes": 20,
+      "median_km2": 2.903,
+      "min_km2": 2.062,
+      "max_km2": 6.672,
+      "ratio": 1.54
+    }
+  ],
+  "passes": [
+    {
+      "run_id": "R20261024T124314Z-66a06f",
+      "scene_id": "LC09_L2SP_140044_20251104_02_T1",
+      "date": "2025-11-04",
+      "cloud_fraction": 0.0001,
+      "hotspots": 25,
+      "area_km2": 5.478
+    },
+    {
+      "run_id": "R20261024T124322Z-b6cce0",
+      "scene_id": "LC08_L2SP_140044_20251112_02_T1",
+      "date": "2025-11-12",
+      "cloud_fraction": 0.0001,
+      "hotspots": 46,
+      "area_km2": 2.772
+    },
+    {
+      "run_id": "R20261024T124345Z-9c5a31",
+      "scene_id": "LC09_L2SP_140044_20251120_02_T1",
+      "date": "2025-11-20",
+      "cloud_fraction": 0.0255,
+      "hotspots": 43,
+      "area_km2": 2.882
+    },
+    {
+      "run_id": "R20261024T124407Z-37550c",
+      "scene_id": "LC08_L2SP_140044_20251128_02_T1",
+      "date": "2025-11-28",
+      "cloud_fraction": 0.0105,
+      "hotspots": 40,
+      "area_km2": 2.076
+    },
+    {
+      "run_id": "R20261024T124514Z-a79008",
+      "scene_id": "LC09_L2SP_140044_20251206_02_T1",
+      "date": "2025-12-06",
+      "cloud_fraction": 0.0001,
+      "hotspots": 41,
+      "area_km2": 2.625
+    },
+    {
+      "run_id": "R20261024T124619Z-177e79",
+      "scene_id": "LC08_L2SP_140044_20251214_02_T1",
+      "date": "2025-12-14",
+      "cloud_fraction": 0.0,
+      "hotspots": 46,
+      "area_km2": 2.096
+    },
+    {
+      "run_id": "R20261024T124737Z-52b27a",
+      "scene_id": "LC09_L2SP_140044_20251222_02_T1",
+      "date": "2025-12-22",
+      "cloud_fraction": 0.0155,
+      "hotspots": 43,
+      "area_km2": 3.847
+    },
+    {
+      "run_id": "R20261024T124846Z-75078d",
+      "scene_id": "LC09_L2SP_140044_20260107_02_T1",
+      "date": "2026-01-07",
+      "cloud_fraction": 0.0684,
+      "hotspots": 43,
+      "area_km2": 2.746
+    },
+    {
+      "run_id": "R20261024T124959Z-b1cb6c",
+      "scene_id": "LC08_L2SP_140044_20260115_02_T1",
+      "date": "2026-01-15",
+      "cloud_fraction": 0.0001,
+      "hotspots": 39,
+      "area_km2": 2.562
+    },
+    {
+      "run_id": "R20261024T125106Z-d925cb",
+      "scene_id": "LC09_L2SP_140044_20260123_02_T1",
+      "date": "2026-01-23",
+      "cloud_fraction": 0.0059,
+      "hotspots": 44,
+      "area_km2": 2.631
+    },
+    {
+      "run_id": "R20261024T130407Z-cd31b9",
+      "scene_id": "LC08_L2SP_140044_20260131_02_T1",
+      "date": "2026-01-31",
+      "cloud_fraction": 0.1002,
+      "hotspots": 34,
+      "area_km2": 4.466
+    },
+    {
+      "run_id": "R20261024T131421Z-9cad9e",
+      "scene_id": "LC09_L2SP_140044_20260208_02_T1",
+      "date": "2026-02-08",
+      "cloud_fraction": 0.0013,
+      "hotspots": 40,
+      "area_km2": 2.924
+    },
+    {
+      "run_id": "R20261024T132650Z-cea813",
+      "scene_id": "LC08_L2SP_140044_20260216_02_T1",
+      "date": "2026-02-16",
+      "cloud_fraction": 0.0078,
+      "hotspots": 47,
+      "area_km2": 2.534
+    },
+    {
+      "run_id": "R20261024T134013Z-d86d5a",
+      "scene_id": "LC09_L2SP_140044_20260224_02_T1",
+      "date": "2026-02-24",
+      "cloud_fraction": 0.0,
+      "hotspots": 37,
+      "area_km2": 2.062
+    },
+    {
+      "run_id": "R20261024T134156Z-f2ab50",
+      "scene_id": "LC09_L2SP_140044_20260413_02_T1",
+      "date": "2026-04-13",
+      "cloud_fraction": 0.0001,
+      "hotspots": 33,
+      "area_km2": 6.672
+    },
+    {
+      "run_id": "R20261024T134301Z-98eed3",
+      "scene_id": "LC08_L2SP_140044_20260608_02_T1",
+      "date": "2026-06-08",
+      "cloud_fraction": 0.0023,
+      "hotspots": 37,
+      "area_km2": 3.128
+    },
+    {
+      "run_id": "R20261024T134408Z-50086e",
+      "scene_id": "LC09_L2SP_140044_20260616_02_T1",
+      "date": "2026-06-16",
+      "cloud_fraction": 0.0017,
+      "hotspots": 45,
+      "area_km2": 4.663
+    },
+    {
+      "run_id": "R20261024T134522Z-ba8a53",
+      "scene_id": "LC08_L2SP_140044_20260624_02_T1",
+      "date": "2026-06-24",
+      "cloud_fraction": 0.1,
+      "hotspots": 43,
+      "area_km2": 4.416
+    },
+    {
+      "run_id": "R20261024T134746Z-581c70",
+      "scene_id": "LC09_L2SP_140044_20261006_02_T1",
+      "date": "2026-10-06",
+      "cloud_fraction": 0.0748,
+      "hotspots": 21,
+      "area_km2": 2.97
+    },
+    {
+      "run_id": "R20261024T134830Z-07cbca",
+      "scene_id": "LC08_L2SP_140044_20261014_02_T1",
+      "date": "2026-10-14",
+      "cloud_fraction": 0.1006,
+      "hotspots": 36,
+      "area_km2": 3.212
+    }
+  ],
+  "source": "https://www.bcclweb.in/masterplan/FireDrilling.pdf",
+  "environment": {
+    "time": "2026-10-24T13:51:48.450315+00:00",
+    "python": "3.13.16",
+    "machine": "x86_64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

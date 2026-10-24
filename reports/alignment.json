@@ -1,0 +1,501 @@
+{
+  "methods": [
+    "orb",
+    "sift",
+    "disk",
+    "aliked_lightglue"
+  ],
+  "rows": [
+    {
+      "condition": "Geolocation only",
+      "method": "orb",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.12531489090540412,
+      "p90_error_px": 0.20609612972810284,
+      "mean_inliers": 2353.6,
+      "mean_seconds": 0.26845564899977037
+    },
+    {
+      "condition": "Geolocation only",
+      "method": "sift",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.010381837209455567,
+      "p90_error_px": 0.011270919682779502,
+      "mean_inliers": 2872.6,
+      "mean_seconds": 0.7335984167997595
+    },
+    {
+      "condition": "Geolocation only",
+      "method": "disk",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.019222995784135978,
+      "p90_error_px": 0.0253025849759083,
+      "mean_inliers": 1560.2,
+      "mean_seconds": 23.195266094600083
+    },
+    {
+      "condition": "Geolocation only",
+      "method": "aliked_lightglue",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.015920840416086067,
+      "p90_error_px": 0.01913698174377374,
+      "mean_inliers": 825.2,
+      "mean_seconds": 3.436488546200053
+    },
+    {
+      "condition": "Haze and low sun",
+      "method": "orb",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.1383075056426476,
+      "p90_error_px": 0.21496568384063902,
+      "mean_inliers": 698.6,
+      "mean_seconds": 0.1912393083999632
+    },
+    {
+      "condition": "Haze and low sun",
+      "method": "sift",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.015113024403077404,
+      "p90_error_px": 0.017883492236161435,
+      "mean_inliers": 2061.0,
+      "mean_seconds": 0.6114892246001545
+    },
+    {
+      "condition": "Haze and low sun",
+      "method": "disk",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.03205212054016659,
+      "p90_error_px": 0.05058377302875894,
+      "mean_inliers": 1206.2,
+      "mean_seconds": 22.05168229840019
+    },
+    {
+      "condition": "Haze and low sun",
+      "method": "aliked_lightglue",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.026919131963036556,
+      "p90_error_px": 0.03994171260999024,
+      "mean_inliers": 773.2,
+      "mean_seconds": 3.2876197334004247
+    },
+    {
+      "condition": "Greener vegetation",
+      "method": "orb",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.20477930770472097,
+      "p90_error_px": 0.25060360407829574,
+      "mean_inliers": 847.8,
+      "mean_seconds": 0.20286081759986702
+    },
+    {
+      "condition": "Greener vegetation",
+      "method": "sift",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.016215694772975617,
+      "p90_error_px": 0.018715569900980552,
+      "mean_inliers": 1469.8,
+      "mean_seconds": 0.7301348445998883
+    },
+    {
+      "condition": "Greener vegetation",
+      "method": "disk",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.03028184483744404,
+      "p90_error_px": 0.03755836506042942,
+      "mean_inliers": 1411.4,
+      "mean_seconds": 21.786600426600124
+    },
+    {
+      "condition": "Greener vegetation",
+      "method": "aliked_lightglue",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.07438183950408585,
+      "p90_error_px": 0.09475213347126396,
+      "mean_inliers": 693.4,
+      "mean_seconds": 3.239702371599742
+    },
+    {
+      "condition": "Cross-sensor",
+      "method": "orb",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.2508427910805745,
+      "p90_error_px": 0.29814405935380367,
+      "mean_inliers": 921.4,
+      "mean_seconds": 0.21728778619999503
+    },
+    {
+      "condition": "Cross-sensor",
+      "method": "sift",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.03271109784976374,
+      "p90_error_px": 0.041744200593537256,
+      "mean_inliers": 670.0,
+      "mean_seconds": 0.6525104476000706
+    },
+    {
+      "condition": "Cross-sensor",
+      "method": "disk",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.06985199048031786,
+      "p90_error_px": 0.08156387007928655,
+      "mean_inliers": 659.2,
+      "mean_seconds": 21.03960066119962
+    },
+    {
+      "condition": "Cross-sensor",
+      "method": "aliked_lightglue",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.03340837597294599,
+      "p90_error_px": 0.03786613156060968,
+      "mean_inliers": 645.8,
+      "mean_seconds": 3.123686016999818
+    },
+    {
+      "condition": "Dry season, new dumps",
+      "method": "orb",
+      "pairs": 5,
+      "registered": 0,
+      "success_rate": 0.0,
+      "median_error_px": null,
+      "p90_error_px": null,
+      "mean_inliers": 4.4,
+      "mean_seconds": 0.21485087900000507
+    },
+    {
+      "condition": "Dry season, new dumps",
+      "method": "sift",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.024073222352008265,
+      "p90_error_px": 0.026940783594761042,
+      "mean_inliers": 405.8,
+      "mean_seconds": 0.6620711417999701
+    },
+    {
+      "condition": "Dry season, new dumps",
+      "method": "disk",
+      "pairs": 5,
+      "registered": 5,
+      "success_rate": 1.0,
+      "median_error_px": 0.0554192780662733,
+      "p90_error_px": 0.10156857385193363,
+      "mean_inliers": 658.4,
+      "mean_seconds": 21.714332135400035
+    },
+    {
+      "condition": "Dry season, new dumps",
+      "method": "aliked_lightglue",
+      "pairs": 5,
+      "registered": 1,
+      "success_rate": 0.2,
+      "median_error_px": 0.4144479502344167,
+      "p90_error_px": 0.4144479502344167,
+      "mean_inliers": 19.2,
+      "mean_seconds": 2.9176592985999377
+    }
+  ],
+  "success_threshold_px": 0.5,
+  "crop_px": 640,
+  "pairs_per_condition": 5,
+  "estimators": {
+    "method": "sift",
+    "true_matches": 200,
+    "rows": [
+      {
+        "study": "condition",
+        "case": "Geolocation only",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.010758435216236996,
+        "mean_inliers": 2871.8,
+        "mean_ms": 0.7793174001562875
+      },
+      {
+        "study": "condition",
+        "case": "Geolocation only",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.010888506393777236,
+        "mean_inliers": 2872.6,
+        "mean_ms": 0.9871898002529633
+      },
+      {
+        "study": "condition",
+        "case": "Geolocation only",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.010381837209455567,
+        "mean_inliers": 2872.6,
+        "mean_ms": 4.3871743999261525
+      },
+      {
+        "study": "condition",
+        "case": "Haze and low sun",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.015105277293645806,
+        "mean_inliers": 2060.0,
+        "mean_ms": 0.9084410001378274
+      },
+      {
+        "study": "condition",
+        "case": "Haze and low sun",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.01934870197947906,
+        "mean_inliers": 2061.0,
+        "mean_ms": 1.4174332000038703
+      },
+      {
+        "study": "condition",
+        "case": "Haze and low sun",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.015113024403077404,
+        "mean_inliers": 2061.0,
+        "mean_ms": 4.941682000026049
+      },
+      {
+        "study": "condition",
+        "case": "Greener vegetation",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.015104826398933499,
+        "mean_inliers": 1469.0,
+        "mean_ms": 0.4567602001770865
+      },
+      {
+        "study": "condition",
+        "case": "Greener vegetation",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.017695489275899593,
+        "mean_inliers": 1469.4,
+        "mean_ms": 0.6342312000924721
+      },
+      {
+        "study": "condition",
+        "case": "Greener vegetation",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.016215694772975617,
+        "mean_inliers": 1469.8,
+        "mean_ms": 1.9273181998869404
+      },
+      {
+        "study": "condition",
+        "case": "Cross-sensor",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.047932743891589843,
+        "mean_inliers": 658.2,
+        "mean_ms": 0.4092720000699046
+      },
+      {
+        "study": "condition",
+        "case": "Cross-sensor",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.05249042156859305,
+        "mean_inliers": 669.8,
+        "mean_ms": 0.6484395997176762
+      },
+      {
+        "study": "condition",
+        "case": "Cross-sensor",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.03271109784976374,
+        "mean_inliers": 670.0,
+        "mean_ms": 1.4679050002087024
+      },
+      {
+        "study": "condition",
+        "case": "Dry season, new dumps",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.02407424551583577,
+        "mean_inliers": 405.8,
+        "mean_ms": 0.2858411997294752
+      },
+      {
+        "study": "condition",
+        "case": "Dry season, new dumps",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.02407186880700031,
+        "mean_inliers": 405.8,
+        "mean_ms": 0.38906360023247544
+      },
+      {
+        "study": "condition",
+        "case": "Dry season, new dumps",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.024073222352008265,
+        "mean_inliers": 405.8,
+        "mean_ms": 1.0285294001732836
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.5,
+        "case": "50% outliers",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.01802596963824449,
+        "mean_inliers": 199.6,
+        "mean_ms": 0.2865786000256776
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.5,
+        "case": "50% outliers",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.020420068583520547,
+        "mean_inliers": 199.6,
+        "mean_ms": 0.4588857998896856
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.5,
+        "case": "50% outliers",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.018033862471996266,
+        "mean_inliers": 199.6,
+        "mean_ms": 0.930875000267406
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.8,
+        "case": "80% outliers",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.018025336298648033,
+        "mean_inliers": 199.6,
+        "mean_ms": 1.8592204000015045
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.8,
+        "case": "80% outliers",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.031049306586705332,
+        "mean_inliers": 199.6,
+        "mean_ms": 1.3100060001306701
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.8,
+        "case": "80% outliers",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.018011094466826156,
+        "mean_inliers": 199.6,
+        "mean_ms": 2.608695200069633
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.9,
+        "case": "90% outliers",
+        "estimator": "ransac",
+        "success_rate": 1.0,
+        "median_error_px": 0.018026264093277254,
+        "mean_inliers": 199.6,
+        "mean_ms": 22.137549599574413
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.9,
+        "case": "90% outliers",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.05688744299228512,
+        "mean_inliers": 199.6,
+        "mean_ms": 9.613263400206051
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.9,
+        "case": "90% outliers",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.01801717598306752,
+        "mean_inliers": 199.6,
+        "mean_ms": 12.169775000074878
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.95,
+        "case": "95% outliers",
+        "estimator": "ransac",
+        "success_rate": 0.8,
+        "median_error_px": 0.01802576368186708,
+        "mean_inliers": 165.6,
+        "mean_ms": 57.321829600005
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.95,
+        "case": "95% outliers",
+        "estimator": "magsac",
+        "success_rate": 1.0,
+        "median_error_px": 0.0314414500670272,
+        "mean_inliers": 199.6,
+        "mean_ms": 19.16189440016751
+      },
+      {
+        "study": "contamination",
+        "outlier_share": 0.95,
+        "case": "95% outliers",
+        "estimator": "accurate",
+        "success_rate": 1.0,
+        "median_error_px": 0.0180092266305783,
+        "mean_inliers": 199.6,
+        "mean_ms": 26.462421600081143
+      }
+    ]
+  },
+  "environment": {
+    "time": "2026-10-22T05:32:16.301836+00:00",
+    "python": "3.13.16",
+    "machine": "x86_64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

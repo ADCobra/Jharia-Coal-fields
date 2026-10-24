@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jharia Fire Watch</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/vendor/leaflet.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <script>try { var t = localStorage.getItem("fw-theme"); document.documentElement.dataset.theme = t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch (e) { document.documentElement.dataset.theme = "light"; }</script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">
+      <h1>Jharia Fire Watch</h1>
+      <p class="tagline">Underground coal fires, watched from space</p>
+    </a>
+    <form class="find" id="find" role="search" autocomplete="off">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="find-input" type="search" list="find-list" placeholder="Find a place or fire" aria-label="Find a town, mine, road or fire on the map">
+      <datalist id="find-list"></datalist>
+    </form>
+    <button type="button" class="data-badge" id="data-badge" aria-haspopup="dialog" aria-controls="about-data">Loading</button>
+    <div class="bell-wrap">
+      <button type="button" class="icon-btn" id="bell" aria-expanded="false" aria-controls="bell-panel" aria-label="Alerts">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="bell-count" id="bell-count" hidden></span>
+      </button>
+      <section class="bell-panel" id="bell-panel" aria-label="Recent alerts" hidden>
+        <div class="bell-head"><h2>Alerts</h2><span id="bell-sub"></span></div>
+        <ol class="bell-list" id="bell-list"><li class="empty">Loading alerts</li></ol>
+      </section>
+    </div>
+    <button type="button" class="icon-btn" id="theme" aria-pressed="false" aria-label="Dark mode">
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <button class="ghost" id="open-help" aria-haspopup="dialog">Quick guide</button>
+    <a class="ghost" href="/help" target="_blank" rel="noopener">Help</a>
+  </header>
+  <div class="offline" id="offline" role="alert" hidden>
+    <span id="offline-text">Can't reach the Fire Watch server. What you see may be out of date.</span>
+    <button type="button" class="btn btn-quiet" id="offline-retry">Try again</button>
+  </div>
+
+  <section class="datebar" aria-label="Date">
+    <div class="date-nav">
+      <button id="prev-pass" class="arrow" aria-label="Earlier photo">&#8249;</button>
+      <div class="date-title">
+        <span class="date" id="pass-date"><span class="skel" style="width:120px"></span></span>
+        <span class="date-sub" id="pass-sub"></span>
+      </div>
+      <button id="next-pass" class="arrow" aria-label="Later photo">&#8250;</button>
+    </div>
+    <p class="story" id="pass-story" aria-live="polite"><span class="skel" style="width:80%"></span></p>
+    <div class="date-actions">
+      <button id="compare-open" class="btn btn-quiet" aria-haspopup="dialog" disabled>Compare two dates</button>
+      <button id="run-next" class="btn btn-quiet" hidden>Process next photo</button>
+      <span id="run-status" class="run-status" role="status"></span>
+    </div>
+  </section>
+
+  <ol class="steps-row" id="steps" aria-label="How this photo was checked"></ol>
+
+  <main class="layout">
+    <section class="map-area" aria-label="Map">
+      <div id="map"></div>
+      <div class="map-mode" role="group" aria-label="Map shows">
+        <button data-view="photo" aria-pressed="true">Photo</button>
+        <button data-view="anomaly" aria-pressed="false">Heat</button>
+        <button data-view="lst" aria-pressed="false">Temperature</button>
+      </div>
+      <p class="map-note" id="map-note" hidden></p>
+      <details class="legend" id="legend" open>
+        <summary>Map key</summary>
+        <ul>
+          <li><i class="sw sw-fire"></i>Fire near a road</li>
+          <li><i class="sw sw-watch"></i>Fire being watched</li>
+          <li><i class="sw sw-factory"></i>Factory heat (ignored)</li>
+          <li><i class="sw sw-cone"></i>Where it may spread in 48 days</li>
+          <li><span class="key-icon" id="key-barrier"></span>Closed road</li>
+          <li><span class="key-icon" id="key-truck"></span>Coal truck</li>
+        </ul>
+        <label class="key-toggle"><input type="checkbox" id="toggle-traffic" checked> Show trucks</label>
+      </details>
+      <div class="heat-scale" id="heat-scale" hidden aria-hidden="true">
+        <span>cooler</span><i></i><span>hotter than normal</span>
+      </div>
+    </section>
+
+    <section class="timeline" aria-label="All photos">
+      <div class="timeline-head">
+        <button class="btn btn-quiet play" id="play" aria-pressed="false">&#9654; Play</button>
+        <span class="timeline-hint">Each dot is one satellite photo. Red ring: a road was closed.</span>
+        <a class="timeline-link" id="timelapse-link" href="/api/timelapse" target="_blank" rel="noopener">Season animation</a>
+      </div>
+      <ol class="dots" id="dots"></ol>
+    </section>
+
+    <aside class="panel" aria-label="Details">
+      <div id="overview">
+        <section class="block" id="decisions-block" hidden>
+          <h2>Needs your decision <span class="count" id="decision-count"></span></h2>
+          <p class="block-intro">Fire Watch never reopens a road by itself, and asks you when it isn't sure.</p>
+          <div id="decisions"></div>
+        </section>
+
+        <section class="block">
+          <h2>Fires on this date</h2>
+          <ol class="fires" id="fires"><li class="skel-card"></li><li class="skel-card"></li><li class="skel-card"></li></ol>
+        </section>
+
+        <details class="block fold" id="roads-block">
+          <summary><h2>Roads and trucks</h2><span class="fold-sub" id="roads-sub"></span></summary>
+          <h3>Closed now</h3>
+          <ul class="plain-list" id="closed-roads"></ul>
+          <h3>Truck routes</h3>
+          <ul class="plain-list" id="routes"></ul>
+        </details>
+
+        <details class="block fold">
+          <summary><h2>Photo quality</h2><span class="fold-sub">for experts</span></summary>
+          <dl class="facts" id="pass-facts"></dl>
+        </details>
+      </div>
+
+      <article class="detail" id="detail" hidden>
+        <button class="back" id="detail-back">&#8249; All fires</button>
+        <div class="detail-head">
+          <h2 id="detail-title"></h2>
+          <span class="chip" id="detail-chip"></span>
+        </div>
+        <p class="summary" id="detail-summary"></p>
+        <dl class="big-facts" id="detail-facts"></dl>
+        <figure class="spark" id="detail-spark"></figure>
+        <section class="film" id="detail-film" aria-label="This fire on each photo" hidden>
+          <h3>On each photo</h3>
+          <ol class="film-strip" id="film-strip"></ol>
+        </section>
+        <h3>What Fire Watch did</h3>
+        <ol class="trail" id="detail-log"></ol>
+        <details class="fold">
+          <summary>Technical details</summary>
+          <dl class="facts" id="detail-more"></dl>
+        </details>
+      </article>
+    </aside>
+  </main>
+
+  <dialog id="help" aria-labelledby="help-title">
+    <form method="dialog">
+      <h2 id="help-title">How Jharia Fire Watch works</h2>
+      <p>Coal seams under Jharia have burned underground since 1916. The fires hollow out the ground, and roads above them can sink. Fire Watch checks every satellite photo and protects the roads.</p>
+      <ol class="help-steps">
+        <li><b>Satellite photo.</b> Landsat 8 and 9 photograph Jharia every 8 days, including a heat (thermal) image.</li>
+        <li><b>Hot ground found.</b> OpenCV lines the photo up with earlier ones and finds ground hotter than it should be. Sun-heated coal and dumps are filtered out.</li>
+        <li><b>Spread predicted.</b> Each fire is followed from photo to photo, and Fire Watch predicts where it could reach in the next 48 days.</li>
+        <li><b>Roads protected.</b> An AI agent closes a road only when a fire is clearly close and it is confident. When unsure, it asks you. Only a person can reopen a road.</li>
+      </ol>
+      <p class="help-note" id="help-data"></p>
+      <p class="help-note">More detail, a guided tour and answers to common questions are on the <a href="/help" target="_blank" rel="noopener">Help page</a>.</p>
+      <button class="btn btn-go" value="close">Got it</button>
+    </form>
+  </dialog>
+
+  <dialog class="about" id="about-data" aria-labelledby="about-title">
+    <form method="dialog">
+      <h2 id="about-title">About the data</h2>
+      <p class="help-note" id="about-lead">Everything here comes from free, public sources. Here is what they are and where they fall short.</p>
+      <dl class="about-list">
+        <dt>Satellite photos</dt>
+        <dd id="about-photos">Landsat 8 and 9 Collection 2 Level-2 scenes (USGS), read from Microsoft Planetary Computer. Each pass brings a surface temperature image and an ordinary colour photo.</dd>
+        <dt>Heat image</dt>
+        <dd>Landsat measures heat at 100 m and USGS delivers it on a 30 m grid. A fire is ground clearly hotter than its surroundings once sun-warmed coal and bare ground are accounted for.</dd>
+        <dt>Roads, mines and plants</dt>
+        <dd id="about-osm">OpenStreetMap. Roads are cut into sections of about 400 m so a closure can be precise.</dd>
+        <dt>Sharper photos</dt>
+        <dd>Sentinel-2 (ESA), used by the agent to double-check a fire when it can reach the archive.</dd>
+      </dl>
+      <h3>What it can't do</h3>
+      <ul class="about-limits">
+        <li>Landsat passes over Jharia at about 10:15 in the morning and sees heat at the surface, not the fire itself. A deep fire can be missed.</li>
+        <li>Cloud hides the ground. Fire Watch waits for a clear photo instead of guessing.</li>
+        <li>Coal dumps and dark ground warmed by the sun can look like fire. Anything doubtful comes to you.</li>
+        <li>This is a research project, not an official closure notice.</li>
+      </ul>
+      <button class="btn btn-go" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <dialog class="compare-dlg" id="compare" aria-labelledby="compare-title">
+    <div class="compare-head">
+      <h2 id="compare-title">Compare two dates</h2>
+      <p id="compare-change" aria-live="polite"></p>
+      <div class="map-mode static" role="group" aria-label="Both maps show">
+        <button type="button" data-cview="photo" aria-pressed="true">Photo</button>
+        <button type="button" data-cview="anomaly" aria-pressed="false">Heat</button>
+      </div>
+      <button type="button" class="compare-x" id="compare-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="compare-maps">
+      <section aria-label="Earlier date">
+        <div class="compare-bar"><label>Earlier <select id="compare-a"></select></label><span id="compare-a-sum"></span></div>
+        <div class="compare-map" id="compare-map-a"></div>
+      </section>
+      <section aria-label="Later date">
+        <div class="compare-bar"><label>Later <select id="compare-b"></select></label><span id="compare-b-sum"></span></div>
+        <div class="compare-map" id="compare-map-b"></div>
+      </section>
+    </div>
+  </dialog>
+
+  <script src="/static/vendor/leaflet.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

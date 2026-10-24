@@ -1,0 +1,9 @@
+- name: Jharia to Dhanbad
+  from: [86.405, 23.745]
+  to: [86.430, 23.795]
+- name: Katras to Dhanbad
+  from: [86.290, 23.800]
+  to: [86.430, 23.795]
+- name: Sindri to Jharia
+  from: [86.480, 23.660]
+  to: [86.405, 23.745]

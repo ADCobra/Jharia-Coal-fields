@@ -1,0 +1,21 @@
+services:
+  api:
+    build: .
+    image: jharia-fire-watch:local
+    command: ["firewatch", "-c", "config/local.yaml", "serve", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    environment:
+      FIREWATCH__API__PASSWORD: ${FIREWATCH_PASSWORD:-demo}
+    volumes:
+      - firewatch-var:/app/var
+
+  seed:
+    image: jharia-fire-watch:local
+    command: ["firewatch", "-c", "config/local.yaml", "demo", "--passes", "4", "--archive", "6"]
+    volumes:
+      - firewatch-var:/app/var
+    profiles: ["seed"]
+
+volumes:
+  firewatch-var: {}

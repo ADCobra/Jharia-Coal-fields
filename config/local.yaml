@@ -1,0 +1,17 @@
+data:
+  source: synthetic
+
+storage:
+  backend: local
+  root: var/blobs
+
+state:
+  backend: sqlite
+  sqlite_path: var/state.db
+
+notify:
+  backend: console
+  outbox: var/outbox.jsonl
+
+agent:
+  planner: policy

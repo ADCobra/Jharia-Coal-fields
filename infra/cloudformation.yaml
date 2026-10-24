@@ -1,0 +1,301 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Jharia Fire Watch on AWS. One Graviton instance runs the dashboard API and the
+  scene worker in containers. New Landsat scenes arrive from the USGS SNS topic
+  through SQS; results go to S3 and DynamoDB, alerts to SNS, agent traces to
+  CloudWatch Logs, and the planner calls Amazon Bedrock. Deploy in us-west-2,
+  where the USGS topic and the Landsat bucket live.
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: Container image in ECR, for example 123456789012.dkr.ecr.us-west-2.amazonaws.com/jharia-fire-watch:20261022
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: Email address that receives closure and review alerts (confirm the subscription email). Leave empty to skip.
+  DataSource:
+    Type: String
+    Default: synthetic
+    AllowedValues: [synthetic, landsat]
+    Description: synthetic runs the demo world on real AWS services; landsat processes new USGS scenes (needs data/jharia_roads.geojson in the image).
+  InstanceType:
+    Type: String
+    Default: t4g.large
+    AllowedValues: [t4g.medium, t4g.large, t4g.xlarge, c7g.large, c7g.xlarge, m7g.large]
+  AllowedCidr:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: Who may reach the dashboard on port 80. Narrow this to your own address range when you can.
+  BedrockModelId:
+    Type: String
+    Default: us.amazon.nova-lite-v1:0
+  UsgsTopicArn:
+    Type: String
+    Default: arn:aws:sns:us-west-2:673253540267:public-c2-notify-v2
+    Description: USGS Landsat Collection 2 notification topic.
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+Conditions:
+  HasEmail: !Not [!Equals [!Ref AlertEmail, ""]]
+  UsesLandsat: !Equals [!Ref DataSource, landsat]
+
+Resources:
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-maps
+            Status: Enabled
+            Prefix: firewatch/runs/
+            ExpirationInDays: 400
+
+  StateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - {AttributeName: pk, AttributeType: S}
+        - {AttributeName: sk, AttributeType: S}
+      KeySchema:
+        - {AttributeName: pk, KeyType: HASH}
+        - {AttributeName: sk, KeyType: RANGE}
+      PointInTimeRecoverySpecification: {PointInTimeRecoveryEnabled: true}
+
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: Jharia Fire Watch
+
+  AlertSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasEmail
+    Properties:
+      TopicArn: !Ref AlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  SceneDeadLetters:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 1209600
+
+  SceneQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 900
+      MessageRetentionPeriod: 345600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt SceneDeadLetters.Arn
+        maxReceiveCount: 3
+
+  SceneQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref SceneQueue]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: sns.amazonaws.com}
+            Action: sqs:SendMessage
+            Resource: !GetAtt SceneQueue.Arn
+            Condition:
+              ArnEquals: {aws:SourceArn: !Ref UsgsTopicArn}
+
+  UsgsSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: UsesLandsat
+    DependsOn: SceneQueuePolicy
+    Properties:
+      TopicArn: !Ref UsgsTopicArn
+      Protocol: sqs
+      Endpoint: !GetAtt SceneQueue.Arn
+      Region: us-west-2
+
+  TraceLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /firewatch/agent
+      RetentionInDays: 30
+
+  DashboardSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: Dashboard login for Jharia Fire Watch (user name demo)
+      GenerateSecretString:
+        PasswordLength: 20
+        ExcludePunctuation: true
+
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ec2.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: firewatch
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: OwnBucket
+                Effect: Allow
+                Action: [s3:GetObject, s3:PutObject, s3:DeleteObject]
+                Resource: !Sub "${DataBucket.Arn}/*"
+              - Sid: OwnBucketList
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt DataBucket.Arn
+              - Sid: LandsatRequesterPays
+                Effect: Allow
+                Action: [s3:GetObject, s3:ListBucket]
+                Resource: ["arn:aws:s3:::usgs-landsat", "arn:aws:s3:::usgs-landsat/*"]
+              - Sid: Sentinel2Cogs
+                Effect: Allow
+                Action: [s3:GetObject, s3:ListBucket]
+                Resource: ["arn:aws:s3:::sentinel-cogs", "arn:aws:s3:::sentinel-cogs/*"]
+              - Sid: State
+                Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:DeleteItem, dynamodb:Query, dynamodb:UpdateItem]
+                Resource: !GetAtt StateTable.Arn
+              - Sid: Alerts
+                Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref AlertTopic
+              - Sid: Scenes
+                Effect: Allow
+                Action: [sqs:ReceiveMessage, sqs:DeleteMessage, sqs:GetQueueAttributes, sqs:ChangeMessageVisibility]
+                Resource: !GetAtt SceneQueue.Arn
+              - Sid: Planner
+                Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:InvokeModelWithResponseStream]
+                Resource:
+                  - "arn:aws:bedrock:*::foundation-model/*"
+                  - !Sub "arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/*"
+              - Sid: Traces
+                Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents, logs:DescribeLogStreams]
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/firewatch/agent:*"
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/firewatch/agent:log-stream:*"
+              - Sid: Metrics
+                Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals: {cloudwatch:namespace: FireWatch}
+              - Sid: Secret
+                Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref DashboardSecret
+              - Sid: PullImage
+                Effect: Allow
+                Action: [ecr:GetAuthorizationToken, ecr:BatchGetImage, ecr:GetDownloadUrlForLayer, ecr:BatchCheckLayerAvailability]
+                Resource: "*"
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref InstanceRole]
+
+  DashboardSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Jharia Fire Watch dashboard
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: !Ref AllowedCidr
+
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref InstanceProfile
+      SecurityGroupIds: [!GetAtt DashboardSecurityGroup.GroupId]
+      MetadataOptions: {HttpTokens: required, HttpEndpoint: enabled, HttpPutResponseHopLimit: 2}
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs: {VolumeSize: 30, VolumeType: gp3, Encrypted: true}
+      Tags:
+        - {Key: Name, Value: jharia-fire-watch}
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+          dnf install -y docker
+          systemctl enable --now docker
+          mkdir -p /opt/firewatch
+          TOKEN=$(curl -sX PUT http://169.254.169.254/latest/api/token -H "X-aws-ec2-metadata-token-ttl-seconds: 300")
+          PUBLIC=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-hostname || true)
+          cat > /opt/firewatch/env <<EOF
+          AWS_DEFAULT_REGION=${AWS::Region}
+          FIREWATCH__AWS__REGION=${AWS::Region}
+          FIREWATCH__DATA__SOURCE=${DataSource}
+          FIREWATCH__STORAGE__BUCKET=${DataBucket}
+          FIREWATCH__STATE__TABLE=${StateTable}
+          FIREWATCH__NOTIFY__TOPIC_ARN=${AlertTopic}
+          FIREWATCH__WORKER__QUEUE_URL=${SceneQueue}
+          FIREWATCH__AGENT__BEDROCK_MODEL_ID=${BedrockModelId}
+          FIREWATCH__AGENT__DASHBOARD_URL=http://$PUBLIC
+          EOF
+          cat > /opt/firewatch/update.sh <<'EOF'
+          #!/bin/bash
+          set -euo pipefail
+          IMAGE="$1"
+          REGISTRY="${!IMAGE%%/*}"
+          REGION=$(grep '^AWS_DEFAULT_REGION=' /opt/firewatch/env | cut -d= -f2)
+          aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$REGISTRY"
+          docker pull "$IMAGE"
+          PASSWORD=$(aws secretsmanager get-secret-value --region "$REGION" --secret-id "$(cat /opt/firewatch/secret_arn)" --query SecretString --output text)
+          CONFIGS=(-c config/aws.yaml)
+          if grep -q '^FIREWATCH__DATA__SOURCE=landsat' /opt/firewatch/env; then CONFIGS+=(-c config/landsat.yaml); fi
+          docker rm -f firewatch-api firewatch-worker >/dev/null 2>&1 || true
+          if ! [ -f /opt/firewatch/seeded ] && ! grep -q '^FIREWATCH__DATA__SOURCE=landsat' /opt/firewatch/env; then
+            docker run --rm --env-file /opt/firewatch/env "$IMAGE" firewatch "${!CONFIGS[@]}" demo --passes 3 --archive 6 && touch /opt/firewatch/seeded
+          fi
+          docker run -d --name firewatch-api --restart unless-stopped --env-file /opt/firewatch/env -e FIREWATCH__API__PASSWORD="$PASSWORD" -p 80:8000 "$IMAGE" firewatch "${!CONFIGS[@]}" serve --host 0.0.0.0 --port 8000
+          if grep -q '^FIREWATCH__DATA__SOURCE=landsat' /opt/firewatch/env; then
+            docker run -d --name firewatch-worker --restart unless-stopped --env-file /opt/firewatch/env "$IMAGE" firewatch "${!CONFIGS[@]}" worker
+          fi
+          EOF
+          chmod +x /opt/firewatch/update.sh
+          echo "${DashboardSecret}" > /opt/firewatch/secret_arn
+          /opt/firewatch/update.sh "${ImageUri}"
+
+Outputs:
+  DashboardUrl:
+    Value: !Sub "http://${Instance.PublicDnsName}/"
+  DashboardPasswordCommand:
+    Description: The dashboard user is demo; this prints the password.
+    Value: !Sub "aws secretsmanager get-secret-value --region ${AWS::Region} --secret-id ${DashboardSecret} --query SecretString --output text"
+  InstanceId:
+    Value: !Ref Instance
+  DataBucket:
+    Value: !Ref DataBucket
+  StateTable:
+    Value: !Ref StateTable
+  AlertTopicArn:
+    Value: !Ref AlertTopic
+  SceneQueueUrl:
+    Value: !Ref SceneQueue
+  TraceLogGroup:
+    Value: !Ref TraceLogGroup
