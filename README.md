@@ -49,7 +49,7 @@ Details: [architecture](docs/architecture.md), [the agent](docs/agent.md), [Open
 
 ## Results so far
 
-All on two synthetic coalfields whose fires, plants and clouds are known exactly: one the thresholds were tuned on, and one built afterwards and held out. `firewatch eval all` regenerates [reports/](reports/README.md).
+Accuracy is measured on two synthetic coalfields whose fires, plants and clouds are known exactly: one the thresholds were tuned on, and one built afterwards and held out. 23 real Landsat scenes have also been processed end to end (below), but real scenes have no ground truth. `firewatch eval all` regenerates [reports/](reports/README.md).
 
 | Check | Result |
 | --- | --- |
@@ -58,7 +58,7 @@ All on two synthetic coalfields whose fires, plants and clouds are known exactly
 | Alignment, 5 conditions × 5 pairs | SIFT 25 of 25 within half a pixel and the most accurate; ALIKED + LightGlue 21 of 25, failing on dry-season change |
 | 48-day spread cone | covers 92 % of the ground a moving fire went on to burn, against 78 % for a circle of the same area; reach-a-road Brier score 0.038 against 0.145 |
 | Precedent from past fires | separates fires that reached a road from those that did not with an ROC area of 0.97, one fire left out at a time |
-| Agent, 38 scripted situations | 37 match a safety officer's call; no closure that wasn't called for, no fire dismissed; 10 of 10 safety checks |
+| Agent, 36 scripted situations | 35 match a safety officer's call; no closure that wasn't called for, no fire dismissed; 10 of 10 safety checks |
 | Run time | 7.3 s per full pass on two vCPUs, with two independent alignments |
 
 The failures are in the reports. Young fires with less than about 4 K of contrast are missed until they grow. The held-out world showed false hotspots on a pond shore on its first run, which led to the footprint matching and the water mask. The projected cone is too wide, about 2.5 times the area a fire actually reaches in the held-out world. An unmapped plant without the vision-language model reaches a person as a false alarm. The scenario suite also caught two rules in the first version that were wrong: the agent closed a road for a fire 500 m away on the projection alone, and it ignored a real fire on the edge of a coke plant. Both rules are fixed ([docs/agent.md](docs/agent.md#what-the-scenario-suite-caught)).
@@ -68,6 +68,25 @@ The failures are in the reports. Young fires with less than about 4 K of contras
 - **Real Landsat scenes have no ground truth.** The 23 real scenes from 4 November 2025 to 14 October 2026 all process end to end. Hot ground on the clear passes has a median of 2.9 km² (2.1 to 6.7), against NRSC's 1.89 km² for 2020, so the detector is in the right range but years apart from the reference ([reports/nrsc.md](reports/nrsc.md)). Most hotspots sit within 500 m of a mapped mine. Real data needed stricter thresholds (8 K seed, 4 K grow), a 100 m closure distance because roads are packed around the mines, and a 90 m position-noise allowance, because outlines change shape between passes and their centres jitter. On real data the agent closes only mine haul roads by itself; public roads go to a person. Over the season it closed 3 roads and raised 123 decisions, which nobody worked through, so they pile up. FIRMS has not been compared.
 - **The vision-language model.** `vision/vlm.py` follows OpenCV 5's PaliGemma 2 sample, and the tests run its whole generation loop through `cv2.dnn.Tokenizer` and the new engine with small stand-in networks. The real 3-billion-parameter model has not been run; it is off by default.
 - **The live AWS stack.** The template passes `cfn-lint` and the scripts pass `shellcheck`, and the S3, DynamoDB, SNS, CloudWatch and Bedrock adapters are tested against moto and stubs, but the stack has not been deployed from here.
+
+## Users
+
+- **Mine-safety officers** review each fire on the dashboard, approve or refuse the agent's closures and reviews, and reopen roads. Only they can reopen a road.
+- **District and road authorities** get the cases on public roads, which the agent never closes by itself on real data.
+- **People who live and work on the coalfield** (residents, truck drivers, coal workers) check closed roads and the nearest fire on the public homepage, with no sign-in.
+
+Details, and who is not served yet, are in the [technical report, section 8](docs/technical_report.md#8-users).
+
+## Responsible use
+
+- A person stays in charge. The agent closes a road by itself only for a high-risk fire it is at least 70 % sure of, close to the road. Everything uncertain goes to a person, and only a person can reopen.
+- Every decision is recorded with its evidence and reason, and shown in the dashboard.
+- It is not an official closure notice. It sees surface heat every 8 days, so it can miss deep, small or clouded fires, and no warning does not mean safe ground. Follow BCCL and district instructions.
+- Closures cost people work and income, so automatic closures are kept to clear cases and reopening is proposed as soon as a fire goes quiet.
+- All inputs are open data at 30 to 100 m, which cannot identify anyone. Use it for safety only, never to watch people such as informal coal collectors.
+- Before a real deployment: one login per person instead of the shared demo account, the dashboard limited to known networks, and someone assigned to the review queue.
+
+The full section is in the [technical report, section 9](docs/technical_report.md#9-responsible-use).
 
 ## Deploy on AWS
 
@@ -79,6 +98,25 @@ ALERT_EMAIL=you@example.com DATA_SOURCE=landsat infra/deploy.sh   # process new 
 ```
 
 The script builds the arm64 image, pushes it to ECR, and creates the stack: S3 bucket, DynamoDB table, SNS alerts, an SQS queue subscribed to the USGS new-scene topic, a CloudWatch log group, a Secrets Manager password and a Graviton `t4g.large`. Run it again to roll out a new image. The stack outputs the dashboard URL and a command that prints the password (the user is `demo`). For Landsat mode, run `python scripts/fetch_osm.py` first so the image carries roads and industrial sites. The planner uses Amazon Nova Lite on Bedrock if model access is enabled, and falls back to the built-in policy if it is not.
+
+Once it is up, `infra/ops.sh` works through SSM, with no SSH:
+
+```bash
+infra/ops.sh info      # dashboard URL and password, CloudWatch trace and SNS topic links
+infra/ops.sh bench     # firewatch eval bench on the Graviton instance -> reports/graviton/bench.md
+infra/ops.sh alert 3   # three more passes, so the agent acts and SNS emails the alerts
+infra/ops.sh logs      # the last 30 minutes of agent traces
+```
+
+## OpenCV on Graviton with COOL
+
+COOL, OpenCV's Cloud-Optimized OpenCV Library, is an OpenCV build tuned for AWS Graviton and sold as an AMI in AWS Marketplace. The Graviton4 edition is built on OpenCV 5, which Fire Watch needs, and runs on c8g, m8g and r8g instances (not on the t4g that serves the dashboard).
+
+```bash
+COOL_AMI_ID=ami-... infra/cool_bench.sh   # launches a c8g.large from the COOL AMI, benchmarks, terminates it
+```
+
+On that one instance, `infra/cool_remote.sh` runs the core OpenCV work of a pass, the same SIFT alignment, warping, anomaly filters and hotspot outlines as the pipeline, under COOL and under the `opencv-contrib-python-headless` wheel in alternating rounds (`scripts/cool_bench.py`), checks that both builds give the same results, and then runs the whole pipeline (`firewatch eval bench`) once under each. The comparison is written to `reports/cool.md`. If SSM does not come up on the COOL AMI, run `sudo bash infra/cool_remote.sh` on the instance over SSH and copy back `/opt/fwbench/results.tgz`.
 
 ## Repository
 

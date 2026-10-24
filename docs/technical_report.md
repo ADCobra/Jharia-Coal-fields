@@ -17,7 +17,7 @@ Tested on two synthetic coalfields built with Landsat's own calibration (section
 | Agent, 36 scripted situations | 35 decisions match a safety officer's call, no unwarranted closures, no dismissed fires; 10 of 10 safety and memory checks; 14 one-at-a-time changes to its constants flip at most 3 decisions | `reports/agent.md` |
 | Run time | median 7.3 s per pass on two vCPUs, including a second, independent alignment | `reports/bench.md` |
 
-None of this has run on real Landsat scenes yet. The real-data path is written against the published formats but could not be reached from the build environment (section 7).
+It has also processed 23 real Landsat 8 and 9 scenes of Jharia, from 4 November 2025 to 14 October 2026, end to end (section 5.7). Real scenes have no ground truth, so they show the system runs on real data and lands in the right range, not how accurate it is: on the 20 clear passes the hot ground has a median area of 2.90 km² (2.06 to 6.67), against NRSC's 1.89 km² for 2020.
 
 ## 2. The problem
 
@@ -29,7 +29,16 @@ Thermal mapping of the fires is established: NRSC's figures come from Landsat ba
 
 ### 3.1 Landsat 8 and 9
 
-Collection 2 Level-1 scenes from the USGS STAC server, read as cloud-optimised GeoTIFF windows from `s3://usgs-landsat`. Band 10 (10.6–11.19 µm) is recorded at 100 m and delivered at 30 m; bands 2, 4, 5, 6 and 7 give NDVI and albedo; `QA_PIXEL` gives cloud, shadow and water. Calibration constants come from each scene's `MTL.json`. With both satellites in orbit, each spot is imaged every 8 days. Details are in [data_sources.md](data_sources.md).
+Band 10 (10.6–11.19 µm) is recorded at 100 m and delivered at 30 m; the reflective bands give NDVI and albedo; `QA_PIXEL` gives cloud, shadow and water. With both satellites in orbit, each spot is imaged every 8 days. The pipeline reads two Collection 2 processing levels, which reach the temperature map differently:
+
+| | Level-2 (L2SP) | Level-1 (L1TP) |
+| --- | --- | --- |
+| Used for | The 23 real scenes in section 5.7 (`data/real.py`, downloaded by `scripts/fetch_real_data.py`) | The live AWS mode (`data/landsat.py`), and the format the synthetic coalfields are written in |
+| Source | Microsoft Planetary Computer, collection `landsat-c2-l2` | USGS STAC server, collection `landsat-c2l1`, pixels from `s3://usgs-landsat` (requester pays) |
+| Temperature | `ST_B10`, the USGS surface temperature product, already corrected for the atmosphere and for emissivity; scaled as `DN × 0.00341802 + 149.0` K | Our own retrieval from band 10 digital numbers with each scene's `MTL.json` constants and an NDVI emissivity (section 4.1), with no atmospheric correction |
+| Reflectance | Surface reflectance, `DN × 2.75e-5 − 0.2` | Top-of-atmosphere reflectance from the `MTL.json` rescaling and sun elevation |
+
+Everything after the temperature map (alignment, detection, tracking, the agent) is the same code for both. Only the Level-2 path has run against real scenes so far; the Level-1 reader is tested on files written in the USGS layout (section 7). Details are in [data_sources.md](data_sources.md).
 
 ### 3.2 Sentinel-2 Level-2A
 
@@ -45,7 +54,7 @@ The tuned world has five fires that move, grow, start and stop, a coke-oven batt
 
 ### 4.1 Land surface temperature
 
-For band 10, with $M_L$, $A_L$, $K_1$, $K_2$ from the MTL:
+Level-2 scenes arrive with surface temperature already computed by USGS, and that product is used as it is. For Level-1 scenes and the synthetic coalfields, the temperature is retrieved from band 10, with $M_L$, $A_L$, $K_1$, $K_2$ from the MTL:
 
 $$L = M_L \cdot DN + A_L, \qquad T_B = \frac{K_2}{\ln(K_1 / L + 1)}, \qquad T_s = \frac{T_B}{1 + (\lambda T_B / \rho)\,\ln \varepsilon}$$
 
@@ -53,7 +62,7 @@ with $\lambda = 10.895$ µm and $\rho = hc/k_B = 14388$ µm·K. Emissivity follo
 
 $$\varepsilon = \varepsilon_v P_v + \varepsilon_s (1 - P_v) + (1 - \varepsilon_s)(1 - P_v) F \varepsilon_v, \qquad P_v = \left(\frac{NDVI - 0.2}{0.5 - 0.2}\right)^2, \quad F = 0.55.$$
 
-Water takes 0.991. Broadband albedo uses Liang's (2001) coefficients. No atmospheric correction is applied; section 7 explains why that matters less than it seems.
+Water takes 0.991. Broadband albedo uses Liang's (2001) coefficients, from surface reflectance on Level-2 scenes and top-of-atmosphere reflectance on Level-1. The Level-1 retrieval applies no atmospheric correction; section 7 explains why that matters less than it seems.
 
 ### 4.2 Alignment
 
@@ -105,11 +114,11 @@ On AWS, the USGS Landsat notification topic feeds an SQS queue that a worker on 
 
 ## 5. Evaluation
 
-All results below are on synthetic data, produced by `firewatch eval all` and stored in `reports/`.
+Sections 5.1 to 5.6 are on the synthetic coalfields, where the truth is known; section 5.7 is on real Landsat scenes, where it is not. All of it is produced by `firewatch eval all` and stored in `reports/`.
 
 ### 5.1 Temperature retrieval
 
-Over seven passes, the retrieved temperature differs from the known surface temperature (blurred by the sensor's response) by 0.10 K on average, with a 95th percentile of 0.24 K and a bias of −0.004 K. Against the synthetic Level-2 product, which carries its own noise, the mean error is 0.22 K. This mainly shows that the radiometry inverts cleanly; real scenes will add an atmospheric bias of a few kelvin.
+Over seven passes, the retrieved temperature differs from the known surface temperature (blurred by the sensor's response) by 0.10 K on average, with a 95th percentile of 0.24 K and a bias of −0.004 K. Against the synthetic Level-2 product, which carries its own noise, the mean error is 0.22 K. This mainly shows that the radiometry inverts cleanly; real Level-1 scenes would add an atmospheric bias of a few kelvin. The real scenes in section 5.7 use the USGS Level-2 temperature instead, which is corrected for the atmosphere.
 
 ### 5.2 Hotspot detection
 
@@ -187,11 +196,25 @@ The suite was then run again with one risk constant moved at a time: each weight
 
 ### 5.6 Run time
 
-Median 7.3 s per full-size pass on two x86 vCPUs: alignment 4.4 s, writing the map layers and the time-lapse frame 1.5 s, assessment and projection 0.34 s, anomaly 0.33 s. The second alignment with ALIKED + LightGlue is about 3.4 s of that, the price of never trusting one matcher. On this build ONNX Runtime is not compiled in, so `ENGINE_ORT` runs at the speed of the new engine, and the classic engine cannot import either learned feature network. `firewatch eval bench` produces the same tables on the Graviton instance.
+Median 7.3 s per full-size pass on two x86 vCPUs: alignment 4.4 s, writing the map layers and the time-lapse frame 1.5 s, assessment and projection 0.34 s, anomaly 0.33 s. The second alignment with ALIKED + LightGlue is about 3.4 s of that, the price of never trusting one matcher. On this build ONNX Runtime is not compiled in, so `ENGINE_ORT` runs at the speed of the new engine, and the classic engine cannot import either learned feature network. `infra/ops.sh bench` runs `firewatch eval bench` on the deployed Graviton instance and writes the same tables for arm64 to `reports/graviton/bench.md`.
 
-### 5.7 Real-data checks (not run)
+`infra/cool_bench.sh` compares COOL, OpenCV's Graviton-optimised build (the Graviton4 edition, built on OpenCV 5), with the PyPI wheel on one c8g instance: the core OpenCV work of a pass in alternating rounds, with a checksum per kernel to confirm both builds compute the same result, and then the whole pipeline under each. The results go to `reports/cool.md`. Neither Graviton run had been made when this report was written.
 
-`firewatch eval nrsc` compares the total non-industrial hotspot area per clear pass with NRSC's 3.28 km² (2017) and 1.89 km² (2020). `firewatch eval firms` checks our hotspots against NASA FIRMS VIIRS and MODIS detections within a day of each pass. Both need processed Landsat passes and report "not run" until then.
+### 5.7 Real Landsat scenes
+
+23 Landsat 8 and 9 Collection 2 Level-2 scenes of path 140, row 44, from 4 November 2025 to 14 October 2026, were downloaded with `scripts/fetch_real_data.py` (the coalfield window only, about 10 to 13 MB a scene) and processed in date order with `firewatch -c config/real.yaml real`, the first three without the agent to build history. Roads, mines, plants and towns come from OpenStreetMap and become 400 m road sections, truck routes and an industrial mask. Every scene processed end to end.
+
+There is no ground truth for a subsurface fire on a given day, so the check is against the area NRSC mapped. `firewatch eval nrsc` sums the non-industrial hotspot area on each clear pass (cloud at most 20 %):
+
+| Reference | NRSC area | Clear passes | Our median | Range | Ratio |
+| --- | --- | --- | --- | --- | --- |
+| NRSC 2020, against Nov 2025 to Oct 2026 | 1.89 km² | 20 | 2.90 km² | 2.06–6.67 km² | 1.54 |
+
+A ratio between about 0.5 and 2 means the detector is in the right range; it is not a pixel-level validation, the methods and thresholds differ, and the reference is five years older. Most hotspots sit within 500 m of a mapped mine. The largest area (6.67 km² on 13 April 2026) falls in the pre-monsoon heat; without ground truth there is no telling whether that is more fire or sun-heated ground the detrending did not remove.
+
+Real data needed different settings from the synthetic worlds (`config/real.yaml`): a stricter seed and grow contrast (8 K and 4 K, against 4 K and 1.5 K), a closure distance of 100 m instead of 250 m because roads are packed around the mines, and a 90 m position-noise allowance in tracking, because real outlines change shape between passes and their centres jitter. On real data the agent closes only mine haul roads by itself; public roads always go to a person. Over the season it closed 3 roads and raised 123 decisions for a person, which nobody worked through, so they pile up; a real deployment needs someone assigned to review them.
+
+`firewatch eval firms` checks our hotspots against NASA FIRMS VIIRS and MODIS detections within a day of each pass. It has not been run, because it needs a FIRMS archive download.
 
 ## 6. Failure cases
 
@@ -205,15 +228,57 @@ Median 7.3 s per full-size pass on two x86 vCPUs: alignment 4.4 s, writing the m
 
 ## 7. Limitations
 
-- **Synthetic only.** Every number in section 5 comes from the synthetic coalfields. The Landsat and Sentinel-2 readers are tested on files written in the USGS and Earth Search layouts (a synthetic pass exported as GeoTIFFs plus `MTL.json` reads back identically through `LandsatSource`), and STAC items are parsed from fixtures. The live parts, STAC search, requester-pays S3 reads and the Overpass download, have not run: the build environment had no network route to them.
-- **No atmospheric correction.** Absolute temperatures will be biased by a few kelvin on humid days. Detection depends on contrast against a local background 1.8 km across, which a smooth atmospheric bias barely changes.
+- **Accuracy is measured on synthetic data only.** Sections 5.1 to 5.6 come from the synthetic coalfields. The real scenes in section 5.7 have no ground truth, so on real data we can show the pipeline runs and lands in the range NRSC reported, not its precision or recall.
+- **The Level-1 live path has not run against the live service.** The real scenes came from the Level-2 collection on Planetary Computer. The Level-1 reader used by the AWS live mode is tested on files written in the USGS layout (a synthetic pass exported as GeoTIFFs plus `MTL.json` reads back identically through `LandsatSource`), and its STAC items are parsed from fixtures, but the USGS STAC search and requester-pays S3 reads have not been run.
+- **No atmospheric correction on Level-1.** Temperatures retrieved from Level-1 scenes will be biased by a few kelvin on humid days; Level-2 scenes use the corrected USGS product. Detection depends on contrast against a local background 1.8 km across, which a smooth atmospheric bias barely changes.
 - **Resolution and timing.** Band 10 is 100 m native. Fires under about a hectare are hard to see (failure 1), and the 10:30 overpass mixes in solar heating that the detrending only partly removes.
 - **Surface heat is not subsurface extent.** Collapse risk depends on seam depth, mining history and the voids left behind, none of which are modelled. The system flags heat near roads; it does not predict collapses.
 - **Hand-set risk model.** Weights and thresholds are judgment, not fitted; section 5.5 shows which decisions depend on them. The projection uses at most eight points of history and a simple transport model, and precedent is only as good as the archive of past tracks behind it.
 - **Untested integrations.** The vision-language loop runs in the tests on stand-in networks, but the PaliGemma 2 model itself (several gigabytes) has not been run; the Bedrock planner has been tested only with scripted replies and failure injection, not against the live service; drone requests are records, not flights.
 - **One instance.** The deployment is a single Graviton instance without failover.
 
-## 8. Reproducing
+## 8. Users
+
+Fire Watch is built for three groups. None of them uses it in production yet; this is who it is designed for and what each one does with it.
+
+| Who | What they need | What they do in Fire Watch |
+| --- | --- | --- |
+| **Mine-safety officers** at the coal company (BCCL's area safety teams) | To know which haul roads and work areas sit over active fire before trucks and people use them, without reading thermal images themselves | Sign in to the dashboard, review each fire with its history and the agent's reasoning, approve or refuse the closures and reviews the agent proposes, and reopen roads once a fire has gone quiet. Only they can reopen a road. |
+| **District and road authorities** | Early warning when a fire nears a public road, a railway or homes | Receive alerts, and decide on public roads: on real data the agent never closes a public road by itself, it sends the case to a person. |
+| **People who live and work on the coalfield**: residents, truck drivers, coal workers | To know whether the road they are about to use is closed, in plain words | Use the public homepage with no sign-in: the latest photo's date, the list of closed roads, and "Check a place" for the nearest fire to a town, mine or road. |
+
+Researchers and judges are a fourth audience: the help guide's guided tour, the reports and this document are written for them.
+
+The dashboard assumes users who know the coalfield but not remote sensing: every fire is summarised in one plain sentence, the technical numbers are folded away, and decisions waiting for a person are listed first.
+
+## 9. Responsible use
+
+Fire Watch can close roads that people depend on for work and travel, and it can fail to warn about a fire. These are the rules it is built around and the limits anyone deploying it should keep.
+
+**A person stays in charge.**
+- The agent may close a road by itself only when the fire is high risk, it is at least 70 % confident, and the fire itself is close to the road; a projection alone never closes a road. On real data it closes only mine haul roads by itself.
+- Everything uncertain goes to a person with a recommendation: fires half under cloud, threats seen only in the projection, disagreeing alignments, and plants not on the map.
+- Only a person can reopen a road. A guard re-checks every action and refuses anything outside the agent's list (section 4.7), and section 5.5 tests these rules, including what happens when the constants move.
+
+**Every decision can be checked.** Each step the agent takes, the evidence it gathered and the reason for its decision are stored with the pass and shown in the dashboard. Approvals record the dashboard user who made them. Every map layer carries its source scene, time and processing in its own metadata.
+
+**It is not an official notice, and it can be wrong.**
+- It sees heat at the surface at about 10:30 every 8 days, not the fire itself. Deep fires, small fires under about a hectare and fires under cloud can be missed (section 6). The absence of a warning does not mean the ground is safe.
+- Sun-heated coal and dumps can look like fire, so false alarms reach a person rather than closing roads.
+- It flags heat near roads; it does not predict where the ground will collapse.
+- The public pages say this in plain words and tell people to follow BCCL and district instructions on the ground.
+
+**Closures have costs.** A closed haul road stops trucks and work, and on the coalfield it can stop income for the people who carry coal. That is why automatic closures are limited to clear cases, why a person reviews the rest, and why the agent proposes reopening as soon as a fire has been quiet for two passes.
+
+**Data and privacy.** Every input is open data: Landsat, Sentinel-2 and OpenStreetMap. At 30 to 100 m per pixel, the imagery cannot identify individuals. Fire Watch stores no personal data about visitors to its public pages (the homepage loads fonts and photos from other sites, which see a visitor's IP address as with any web request); the dashboard stores only the user name that made each decision. Fire Watch must not be repurposed to watch people, for example to find or police informal coal collection; its outputs are about ground temperature near roads, and they should be used only for safety.
+
+**Before a real deployment:**
+- Replace the shared demo login with one account per person, so that every approval is attributable to a named reviewer.
+- Restrict the dashboard to known networks (`ALLOWED_CIDR`).
+- Assign someone to work through the review queue. On real data it grew to 123 decisions in a season.
+- Re-tune and re-test the thresholds with the safety teams who will use it, since every threshold here was set on synthetic data or by hand.
+
+## 10. Reproducing
 
 ```bash
 pip install -r requirements-dev.txt && pip install --no-deps -e .
@@ -221,6 +286,14 @@ firewatch download-models
 pytest
 firewatch demo --fresh
 firewatch eval all --out reports
+```
+
+On real scenes:
+
+```bash
+bash get_real_data.sh
+firewatch -c config/real.yaml real
+firewatch -c config/real.yaml eval nrsc
 ```
 
 ## References

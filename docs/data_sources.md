@@ -2,9 +2,30 @@
 
 Every input is open data. Nothing needs a commercial licence, and the AWS-hosted copies avoid downloading whole scenes.
 
-## Landsat 8 and 9, Collection 2 Level-1
+Landsat 8 and 9 come in two Collection 2 processing levels, and Fire Watch reads both. Band 10 (TIRS, 10.6–11.19 µm) is recorded at 100 m and delivered resampled to 30 m in both. The two satellites together pass over Jharia every 8 days in clear weather, at about 10:30 local time.
 
-The main input. Band 10 (TIRS, 10.6–11.19 µm) is recorded at 100 m and delivered resampled to 30 m. The two satellites together pass over Jharia every 8 days in clear weather, at about 10:30 local time.
+| | Level-2 (L2SP) | Level-1 (L1TP) |
+| --- | --- | --- |
+| Used for | The real scenes processed so far (`bash get_real_data.sh`, then `firewatch -c config/real.yaml real`) | The live AWS mode (`DATA_SOURCE=landsat`); the synthetic coalfields are written in this format |
+| Temperature | USGS surface temperature, corrected for the atmosphere | Retrieved by Fire Watch from band 10, no atmospheric correction |
+| Reader | `data/real.py` | `data/landsat.py` |
+
+## Landsat 8 and 9, Collection 2 Level-2 (the real scenes)
+
+`scripts/fetch_real_data.py` searches Microsoft Planetary Computer (free, no account) and reads only the coalfield window of each scene, about 10 to 13 MB, into one GeoTIFF stack per scene plus a JSON sidecar under `data/real/scenes/`.
+
+| What | Where |
+| --- | --- |
+| Scene search | `https://planetarycomputer.microsoft.com/api/stac/v1/search`, collection `landsat-c2-l2`, signed with the Planetary Computer SAS token |
+| Assets read | `lwir11` (`ST_B10`, surface temperature), `blue`, `green`, `red`, `nir08`, `swir16`, `swir22` (surface reflectance), `qa_pixel` |
+| Scaling | Temperature `DN × 0.00341802 + 149.0` K; reflectance `DN × 2.75e-5 − 0.2` |
+| Kept | Scenes that cover the whole coalfield and are less than half cloudy over it |
+
+`ST_B10` is the USGS single-channel surface temperature, already corrected for the atmosphere and for emissivity, so Fire Watch uses it as it is (`physics/thermal.py`). NDVI and albedo come from the surface reflectance bands; cloud, shadow and water from `QA_PIXEL` as below. 23 scenes from 4 November 2025 to 14 October 2026 have been processed (technical report, section 5.7).
+
+## Landsat 8 and 9, Collection 2 Level-1 (the live AWS mode)
+
+The input for the deployed worker, which reacts to new-scene notifications.
 
 | What | Where |
 | --- | --- |
@@ -19,9 +40,9 @@ Calibration constants come from each scene's `MTL.json`, never from code: `RADIA
 
 `QA_PIXEL` bits used (`vision/clouds.py`): fill (0), dilated cloud (1), cirrus (2), cloud (3), cloud shadow (4), clear (6), water (7), and the high-confidence pairs for cloud (8–9), shadow (10–11) and cirrus (14–15). Cloud and shadow are dilated by 2 pixels before anything else runs.
 
-## Landsat Collection 2 Level-2 surface temperature
+## Checking the Level-1 retrieval against Level-2
 
-Used only to check our own temperatures (`firewatch eval lst`). Collection `landsat-c2l2-st`, asset `lwir11`, scaled as `DN × 0.00341802 + 149.0` K. Our retrieval skips atmospheric correction, so expect a bias of a few kelvin against it on humid days. Hotspot detection works on local contrast, so a scene-wide bias barely matters there.
+`firewatch eval lst` compares our Level-1 retrieval with the USGS Level-2 temperature for the same pass (USGS STAC collection `landsat-c2l2-st`, asset `lwir11`, same scaling as above). Our retrieval skips atmospheric correction, so expect a bias of a few kelvin against it on humid days. Hotspot detection works on local contrast, so a scene-wide bias barely matters there.
 
 ## Sentinel-2 Level-2A
 
