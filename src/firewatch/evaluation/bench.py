@@ -17,6 +17,8 @@ from firewatch.evaluation.common import md_table, write_report
 from firewatch.vision.cvcompat import model_path
 from firewatch.vision.registration import FeatureRegistrar
 
+# FIREWATCH_BENCH_SKIP=disk leaves out the DISK network, whose 1024 px forward pass does not fit in 2 GB of memory.
+SKIP = {name.strip().lower() for name in os.environ.get("FIREWATCH_BENCH_SKIP", "").split(",") if name.strip()}
 STAGES = ("load", "thermal", "align", "warp", "anomaly", "hotspots", "tracking", "assess", "agent", "persist")
 
 
@@ -64,6 +66,8 @@ def matcher_timings(settings: Settings, base_dir: Path, size: int = 768, repeats
     registrar = FeatureRegistrar(settings.alignment, models if models.is_absolute() else base_dir / models)
     rows = []
     for method in registrar.available_methods():
+        if method in SKIP:
+            continue
         registrar.register(ref, mov, method=method)
         times = []
         for _ in range(repeats):
@@ -102,7 +106,7 @@ def engine_timings(settings: Settings, base_dir: Path, repeats: int = 2) -> list
     rows = []
     for label, filename, size in (("ALIKED", settings.alignment.aliked_model, 640), ("DISK", settings.alignment.disk_model, 1024)):
         path = model_path(models, filename)
-        if path is None:
+        if path is None or label.lower() in SKIP:
             continue
         blob = rng.random((1, 3, size, size), dtype=np.float32)
         for engine in (e for e in ENGINES if hasattr(cv2.dnn, e)):
@@ -157,5 +161,7 @@ def report(settings: Settings, base_dir: Path, out_dir: Path, scale: float | Non
             "",
             "The classic engine cannot import either network, which is why the matchers ask for the new engine explicitly. Without ONNX Runtime in the build, ENGINE_ORT gives the same speed as the new engine.",
         ]
+    if SKIP:
+        md += ["", f"Left out on this machine (`FIREWATCH_BENCH_SKIP`): {', '.join(sorted(SKIP))}."]
     md += ["", "Run `firewatch eval bench` on the Graviton instance to get the same tables for arm64."]
     return write_report(out_dir, "bench", data, "\n".join(md))

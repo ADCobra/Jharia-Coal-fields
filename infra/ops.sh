@@ -42,7 +42,12 @@ case "${1:-info}" in
     ;;
   bench)
     mkdir -p reports/graviton
-    remote "docker exec firewatch-api sh -c 'firewatch eval bench --out /tmp/bench >&2 && tar -C /tmp/bench -czf - bench.md bench.json | base64 -w0'" "Fire Watch eval bench" \
+    # On instances with under 3 GB of memory, leave out DISK (set BENCH_SKIP= to force it in).
+    SKIP="${BENCH_SKIP-auto}"
+    if [ "$SKIP" = auto ]; then
+      SKIP="$(remote "awk '/MemTotal/ {print (\$2 < 3000000) ? \"disk\" : \"\"}' /proc/meminfo" "Fire Watch memory check" | tr -d '[:space:]')"
+    fi
+    remote "docker exec -e FIREWATCH_BENCH_SKIP=$SKIP firewatch-api sh -c 'firewatch eval bench --out /tmp/bench >&2 && tar -C /tmp/bench -czf - bench.md bench.json | base64 -w0'" "Fire Watch eval bench" \
       | tr -d '\n' | base64 -d | tar -xzf - -C reports/graviton
     echo "Wrote reports/graviton/bench.md:"
     cat reports/graviton/bench.md

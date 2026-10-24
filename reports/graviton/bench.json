@@ -1,0 +1,90 @@
+{
+  "machine": {
+    "machine": "aarch64",
+    "processor": "aarch64",
+    "cpus": 2,
+    "system": "Linux",
+    "opencv_threads": 2,
+    "opencv": "5.0.0"
+  },
+  "pipeline": {
+    "grid": "1364 x 857 px",
+    "passes": 4,
+    "median_pass_seconds": 41.95,
+    "stages": {
+      "load": 2.421,
+      "thermal": 0.066,
+      "align": 33.297,
+      "warp": 0.568,
+      "anomaly": 0.958,
+      "hotspots": 0.169,
+      "tracking": 0.157,
+      "assess": 0.504,
+      "agent": 1.239,
+      "persist": 2.853
+    },
+    "method": "sift"
+  },
+  "matchers": [
+    {
+      "method": "sift",
+      "image_px": 768,
+      "median_seconds": 0.819
+    },
+    {
+      "method": "aliked_lightglue",
+      "image_px": 768,
+      "median_seconds": 4.376
+    },
+    {
+      "method": "orb",
+      "image_px": 768,
+      "median_seconds": 0.308
+    }
+  ],
+  "engines": [
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_NEW",
+      "input_px": 640,
+      "load_seconds": 0.185,
+      "ok": true,
+      "forward_seconds": 1.158
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_ORT",
+      "input_px": 640,
+      "load_seconds": 0.155,
+      "ok": true,
+      "forward_seconds": 1.252
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_CLASSIC",
+      "input_px": 640,
+      "ok": false,
+      "error": "Unsqueeze node: Multidimensional unsqueeze"
+    },
+    {
+      "model": "ALIKED",
+      "engine": "ENGINE_AUTO",
+      "input_px": 640,
+      "load_seconds": 0.093,
+      "ok": true,
+      "forward_seconds": 1.188
+    }
+  ],
+  "build": {
+    "Lapack": "YES (OpenBLAS /usr/lib64/libopenblasp.so)",
+    "DNN MLAS": "YES (SGEMM-only, vendored)",
+    "ONNX Runtime": "NO"
+  },
+  "environment": {
+    "time": "2026-10-24T21:48:02.112282+00:00",
+    "python": "3.13.17",
+    "machine": "aarch64",
+    "opencv": "5.0.0",
+    "threads": 2
+  }
+}

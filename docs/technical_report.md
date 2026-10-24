@@ -15,7 +15,7 @@ Tested on two synthetic coalfields built with Landsat's own calibration (section
 | 48-day spread cone | covers 92 % of the ground a moving fire went on to burn, against 78 % for a circle of the same area (held-out world); reach-a-road Brier score 0.038 against 0.145 for the base rate | `reports/forecast.md` |
 | Precedent from past fires (`cv2.ANNIndex`) | area under the ROC curve 0.97 for "will it come within 400 m of a road in 64 days", leaving one fire out at a time | `reports/forecast.md` |
 | Agent, 36 scripted situations | 35 decisions match a safety officer's call, no unwarranted closures, no dismissed fires; 10 of 10 safety and memory checks; 14 one-at-a-time changes to its constants flip at most 3 decisions | `reports/agent.md` |
-| Run time | median 7.3 s per pass on two vCPUs, including a second, independent alignment | `reports/bench.md` |
+| Run time | median 7.3 s per pass on two x86 vCPUs, including a second, independent alignment; 42 s on the live Graviton t4g.small with 2 GB | `reports/bench.md`, `reports/graviton/bench.md` |
 
 It has also processed 23 real Landsat 8 and 9 scenes of Jharia, from 4 November 2025 to 14 October 2026, end to end (section 5.7). Real scenes have no ground truth, so they show the system runs on real data and lands in the right range, not how accurate it is: on the 20 clear passes the hot ground has a median area of 2.90 km² (2.06 to 6.67), against NRSC's 1.89 km² for 2020.
 
@@ -196,9 +196,20 @@ The suite was then run again with one risk constant moved at a time: each weight
 
 ### 5.6 Run time
 
-Median 7.3 s per full-size pass on two x86 vCPUs: alignment 4.4 s, writing the map layers and the time-lapse frame 1.5 s, assessment and projection 0.34 s, anomaly 0.33 s. The second alignment with ALIKED + LightGlue is about 3.4 s of that, the price of never trusting one matcher. On this build ONNX Runtime is not compiled in, so `ENGINE_ORT` runs at the speed of the new engine, and the classic engine cannot import either learned feature network. `infra/ops.sh bench` runs `firewatch eval bench` on the deployed Graviton instance and writes the same tables for arm64 to `reports/graviton/bench.md`.
+Median 7.3 s per full-size pass on two x86 vCPUs: alignment 4.4 s, writing the map layers and the time-lapse frame 1.5 s, assessment and projection 0.34 s, anomaly 0.33 s. The second alignment with ALIKED + LightGlue is about 3.4 s of that, the price of never trusting one matcher. On this build ONNX Runtime is not compiled in, so `ENGINE_ORT` runs at the speed of the new engine, and the classic engine cannot import either learned feature network. `infra/ops.sh bench` runs the same benchmark on the deployed instance (`reports/graviton/bench.md`): a Graviton2 t4g.small with 2 vCPUs and 2 GB of memory, the largest Graviton type an AWS Free plan account may launch.
 
-`infra/cool_bench.sh` compares COOL, OpenCV's Graviton-optimised build (the Graviton4 edition, built on OpenCV 5), with the PyPI wheel on one c8g instance: the core OpenCV work of a pass in alternating rounds, with a checksum per kernel to confirm both builds compute the same result, and then the whole pipeline under each. The results go to `reports/cool.md`. Neither Graviton run had been made when this report was written.
+| | x86, 2 vCPUs | Graviton2 t4g.small |
+| --- | --- | --- |
+| SIFT alignment, 768 px | 0.65 s | 0.82 s |
+| ALIKED + LightGlue alignment, 768 px | 3.34 s | 4.38 s |
+| ALIKED forward pass, new engine, 640 px | 1.11 s | 1.16 s |
+| Whole pass, median | 7.3 s | 42.0 s |
+| of which alignment | 4.4 s | 33.3 s |
+| of which loading the scene | 0.23 s | 2.42 s |
+
+The isolated matchers run within 1.3 to 1.4 times the x86 time, and the network itself at the same speed. The whole pass does not: it is six times slower, and the slowdown sits in the stages that hold full-size products in memory. The instance was already using swap before the benchmark started, so memory, not the processor, is the likely cause; a 4 GB or larger instance should close most of the gap, but that has not been measured. DISK had to be left out (`FIREWATCH_BENCH_SKIP=disk`): its 1024 px forward pass took the process to 1.7 GB and the kernel stopped it.
+
+`infra/cool_bench.sh` compares COOL, OpenCV's Graviton-optimised build (the Graviton4 edition, built on OpenCV 5), with the PyPI wheel on one c8g instance: the core OpenCV work of a pass in alternating rounds, with a checksum per kernel to confirm both builds compute the same result, and then the whole pipeline under each. The results go to `reports/cool.md`. This comparison has not been run: the AWS account the project is deployed from is on the Free plan, which does not allow c8g instances.
 
 ### 5.7 Real Landsat scenes
 
@@ -273,7 +284,7 @@ Fire Watch can close roads that people depend on for work and travel, and it can
 **Data and privacy.** Every input is open data: Landsat, Sentinel-2 and OpenStreetMap. At 30 to 100 m per pixel, the imagery cannot identify individuals. Fire Watch stores no personal data about visitors to its public pages (the homepage loads fonts and photos from other sites, which see a visitor's IP address as with any web request); the dashboard stores only the user name that made each decision. Fire Watch must not be repurposed to watch people, for example to find or police informal coal collection; its outputs are about ground temperature near roads, and they should be used only for safety.
 
 **Before a real deployment:**
-- Replace the shared demo login with one account per person, so that every approval is attributable to a named reviewer.
+- Turn off the filled-in demo sign-in (`api.show_demo_login: false`), and replace the shared demo login with one account per person, so that every approval is attributable to a named reviewer.
 - Restrict the dashboard to known networks (`ALLOWED_CIDR`).
 - Assign someone to work through the review queue. On real data it grew to 123 decisions in a season.
 - Re-tune and re-test the thresholds with the safety teams who will use it, since every threshold here was set on synthetic data or by hand.
