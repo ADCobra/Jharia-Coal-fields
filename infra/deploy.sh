@@ -2,6 +2,7 @@
 # Build the arm64 image, push it to ECR, then create the stack or roll the
 # running instance onto the new image.
 #   ALERT_EMAIL=you@example.com DATA_SOURCE=synthetic infra/deploy.sh
+# On an AWS Free plan account, add INSTANCE_TYPE=t4g.small (the only Graviton type the Free plan allows besides t4g.micro).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -21,7 +22,7 @@ docker buildx build --platform linux/arm64 -t "$IMAGE" --push .
 deploy_stack() {
   aws cloudformation deploy --region "$REGION" --stack-name "$STACK" \
     --template-file infra/cloudformation.yaml --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset \
-    --parameter-overrides ImageUri="$1" AlertEmail="${ALERT_EMAIL:-}" DataSource="${DATA_SOURCE:-synthetic}" AllowedCidr="${ALLOWED_CIDR:-0.0.0.0/0}"
+    --parameter-overrides ImageUri="$1" AlertEmail="${ALERT_EMAIL:-}" DataSource="${DATA_SOURCE:-synthetic}" AllowedCidr="${ALLOWED_CIDR:-0.0.0.0/0}" InstanceType="${INSTANCE_TYPE:-t4g.large}"
 }
 
 output() {
