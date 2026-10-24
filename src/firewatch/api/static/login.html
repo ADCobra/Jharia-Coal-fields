@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · Jharia Fire Watch</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Kannada:ital@0;1&family=Wix+Madefor+Display:wght@400;500;600;700&display=swap">
+  <style>
+    :root { --ink: #0c0b0c; --line: rgba(255, 255, 255, 0.12); --fog: #a6a2a9; --flame: #e73825; --flame-2: #ff7a3d; --violet: #7b5ce0; --lilac: #edc5fc; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: var(--ink); color: #fff; font: 400 16px/1.5 "Wix Madefor Display", "Barlow", system-ui, sans-serif; overflow-x: clip; }
+    body::before { content: ""; position: fixed; z-index: -1; left: 50%; top: 55%; width: 80vw; height: 50vh; transform: translateX(-50%); border-radius: 50%; filter: blur(110px); opacity: 0.4; background: linear-gradient(78deg, #4a494b 10%, var(--flame) 45%, var(--violet) 75%, #4a494b); }
+    [hidden] { display: none !important; }
+    .card { width: min(420px, 100%); padding: 34px 32px 28px; border-radius: 26px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 600; font-size: 17px; }
+    .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffd27a, var(--flame) 60%, #7a1408); box-shadow: 0 0 14px rgba(231, 56, 37, 0.8); }
+    h1 { margin: 26px 0 6px; font-size: 34px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; }
+    h1 em { font-family: "Tiro Kannada", Georgia, serif; font-weight: 400; color: var(--flame-2); }
+    .lead { margin: 0 0 22px; color: var(--fog); font-size: 15px; }
+    .demo { margin: 0 0 20px; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 122, 61, 0.45); background: rgba(231, 56, 37, 0.12); font-size: 14px; color: #f4e3dc; }
+    .demo b { color: #ffb38f; }
+    .demo code { font: 600 13px ui-monospace, "SF Mono", Menlo, monospace; color: #fff; background: rgba(0, 0, 0, 0.35); padding: 1px 6px; border-radius: 6px; }
+    .error { margin: 0 0 16px; padding: 10px 14px; border-radius: 12px; background: rgba(210, 63, 29, 0.2); border: 1px solid rgba(255, 138, 101, 0.5); font-size: 14px; }
+    label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.86); }
+    .field { position: relative; margin-bottom: 16px; }
+    input { width: 100%; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.06); color: #fff; font: inherit; }
+    input:focus { outline: 2px solid var(--lilac); outline-offset: 1px; }
+    .show { position: absolute; right: 8px; bottom: 8px; padding: 5px 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.3); color: var(--fog); font: 600 12px inherit; cursor: pointer; }
+    .show:hover { color: #fff; }
+    button[type=submit] { width: 100%; margin-top: 6px; padding: 14px; border: 0; border-radius: 16px; background: #fff; color: var(--ink); font: 600 16px inherit; font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.2s; }
+    button[type=submit]:hover { background: var(--lilac); transform: translateY(-1px); }
+    .back { display: block; margin-top: 18px; text-align: center; color: var(--fog); font-size: 14px; }
+    .back:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <a class="brand" href="/">Jharia Fire Watch</a>
+    <h1>Open the <em>dashboard</em></h1>
+    <p class="lead">Review fires, approve or refuse road closures, and step through the season.</p>
+    <p class="demo" {{DEMO_HIDDEN}}><b>Demo project.</b> The login is filled in for you: user <code>{{USER}}</code>, password <code>{{PASSWORD}}</code>. Just press Sign in.</p>
+    <p class="error" role="alert" {{ERROR_HIDDEN}}>That user name and password did not match. Try again.</p>
+    <form method="post" action="/login">
+      <div class="field">
+        <label for="username">User name</label>
+        <input id="username" name="username" autocomplete="username" value="{{USER}}" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" value="{{PASSWORD}}" required>
+        <button type="button" class="show" id="show" aria-controls="password" aria-pressed="false">Show</button>
+      </div>
+      <button type="submit">Sign in</button>
+    </form>
+    <a class="back" href="/">Back to the homepage</a>
+  </main>
+  <script>
+    const show = document.getElementById("show"), pw = document.getElementById("password");
+    show.addEventListener("click", () => {
+      const visible = pw.type === "password";
+      pw.type = visible ? "text" : "password";
+      show.textContent = visible ? "Hide" : "Show";
+      show.setAttribute("aria-pressed", String(visible));
+    });
+  </script>
+</body>
+</html>

@@ -51,7 +51,8 @@ def test_health_is_public_and_the_rest_needs_a_login(client):
 
 def test_dashboard_and_api(client, demo_ctx):
     assert client.get("/dashboard", headers=AUTH).status_code == 200
-    assert client.get("/dashboard").status_code == 401
+    away = client.get("/dashboard", follow_redirects=False)
+    assert away.status_code == 303 and away.headers["location"] == "/login"
     assert client.get("/").status_code == 200
     assert client.get("/help").status_code == 200
     public = client.get("/api/public/status").json()

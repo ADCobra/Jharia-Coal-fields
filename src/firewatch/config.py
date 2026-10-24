@@ -198,6 +198,7 @@ class APIConfig(_Section):
     password: str
     allow_runs: bool
     scenery: bool
+    show_demo_login: bool
 
 
 class AWSConfig(_Section):

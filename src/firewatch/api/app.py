@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import html
 import json
 import logging
 import secrets
 import threading
+from urllib.parse import parse_qs
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -23,7 +27,9 @@ from firewatch.vision.media import read_provenance
 log = logging.getLogger(__name__)
 STATIC = Path(__file__).with_name("static")
 LAYERS = ("lst", "anomaly", "color", "frame", "photo")
-security = HTTPBasic(realm="Jharia Fire Watch")
+security = HTTPBasic(realm="Jharia Fire Watch", auto_error=False)
+SESSION_COOKIE = "fw_session"
+SESSION_DAYS = 7
 
 
 class Decision(BaseModel):
@@ -56,12 +62,32 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
 
     app = FastAPI(title="Jharia Fire Watch", version=__version__, lifespan=lifespan)
 
-    def user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
-        good_user = secrets.compare_digest(credentials.username.encode(), settings.api.user.encode())
-        good_pass = secrets.compare_digest(credentials.password.encode(), settings.api.password.encode())
-        if not (good_user and good_pass):
-            raise HTTPException(status_code=401, detail="wrong user name or password", headers={"WWW-Authenticate": 'Basic realm="Jharia Fire Watch"'})
-        return credentials.username
+    # Sign-in: the login page sets a signed session cookie; scripts can still send HTTP Basic credentials.
+    # The signing key comes from the password, so changing the password signs everyone out.
+    session_key = hashlib.sha256(f"firewatch-session|{settings.api.user}|{settings.api.password}".encode()).digest()
+
+    def session_token(name: str) -> str:
+        return f"{name}:{hmac.new(session_key, name.encode(), hashlib.sha256).hexdigest()}"
+
+    def good_login(name: str, password: str) -> bool:
+        good_user = secrets.compare_digest(name.encode(), settings.api.user.encode())
+        good_pass = secrets.compare_digest(password.encode(), settings.api.password.encode())
+        return good_user and good_pass
+
+    def signed_in(request: Request, credentials: HTTPBasicCredentials | None) -> str | None:
+        if credentials and good_login(credentials.username, credentials.password):
+            return credentials.username
+        token = request.cookies.get(SESSION_COOKIE, "")
+        name = token.split(":", 1)[0]
+        if name and secrets.compare_digest(token.encode(), session_token(name).encode()) and name == settings.api.user:
+            return name
+        return None
+
+    def user(request: Request, credentials: HTTPBasicCredentials | None = Depends(security)) -> str:
+        name = signed_in(request, credentials)
+        if name is None:
+            raise HTTPException(status_code=401, detail="sign in at /login")
+        return name
 
     def context():
         if state["ctx"] is None:
@@ -80,9 +106,41 @@ def create_app(settings: Settings, base_dir: str | Path | None = None, ctx=None)
     def help_page():
         return FileResponse(STATIC / "help.html", headers={"Cache-Control": "no-store"})
 
-    @app.get("/dashboard", dependencies=[Depends(user)])
-    def index():
+    @app.get("/dashboard")
+    def index(request: Request, credentials: HTTPBasicCredentials | None = Depends(security)):
+        if signed_in(request, credentials) is None:
+            return RedirectResponse("/login", status_code=303)
         return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-store"})
+
+    @app.get("/login")
+    def login_page(error: int = 0):
+        page = (STATIC / "login.html").read_text()
+        demo = settings.api.show_demo_login
+        fill = {
+            "{{USER}}": html.escape(settings.api.user if demo else "", quote=True),
+            "{{PASSWORD}}": html.escape(settings.api.password if demo else "", quote=True),
+            "{{DEMO_HIDDEN}}": "" if demo else "hidden",
+            "{{ERROR_HIDDEN}}": "" if error else "hidden",
+        }
+        for key, value in fill.items():
+            page = page.replace(key, value)
+        return HTMLResponse(page, headers={"Cache-Control": "no-store"})
+
+    @app.post("/login")
+    async def login(request: Request):
+        form = parse_qs((await request.body()).decode("utf-8", "replace"))
+        name, password = form.get("username", [""])[0], form.get("password", [""])[0]
+        if not good_login(name, password):
+            return RedirectResponse("/login?error=1", status_code=303)
+        res = RedirectResponse("/dashboard", status_code=303)
+        res.set_cookie(SESSION_COOKIE, session_token(name), max_age=SESSION_DAYS * 86400, httponly=True, samesite="lax")
+        return res
+
+    @app.get("/logout")
+    def logout():
+        res = RedirectResponse("/", status_code=303)
+        res.delete_cookie(SESSION_COOKIE)
+        return res
 
     @app.get("/api/public/status")
     def public_status():

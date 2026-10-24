@@ -157,6 +157,9 @@ api:
   password: demo
   allow_runs: true
   scenery: true
+  # A demo project: the login page comes filled in with the user and password, so judges can open the dashboard
+  # in one click. Set to false for any real deployment.
+  show_demo_login: true
 
 aws:
   region: us-west-2
