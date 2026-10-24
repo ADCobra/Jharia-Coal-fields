@@ -118,8 +118,96 @@ a:hover { color: #fff; }
 .reel figcaption small { display: block; font-size: 11px; color: rgba(255, 255, 255, 0.38); }
 .reel-note { margin: 18px auto 0; font-size: 12px; color: rgba(255, 255, 255, 0.4); }
 
+/* How it works: a flowchart that pins while you scroll and steps through one card per screen */
+.flow { position: relative; border-top: 1px solid var(--line); overflow-x: clip; }
+.flow::before { content: ""; position: absolute; z-index: -1; left: -15vw; top: 30%; width: 55vw; height: 40%; border-radius: 50%; filter: blur(120px); opacity: 0.28; background: linear-gradient(120deg, var(--flame), var(--violet)); pointer-events: none; }
+.flow-sticky { padding-block: 96px; }
+.flow-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 36px; }
+.flow-head h2 { font-size: clamp(32px, 4.4vw, 60px); line-height: 1.04; letter-spacing: -0.035em; max-width: 16ch; }
+.flow-head h2 em { color: var(--flame-2); }
+.flow-count { margin: 0; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fog); white-space: nowrap; }
+.flow-grid { display: grid; grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.6fr); gap: 48px; align-items: start; }
+
+.fc-wrap { position: relative; }
+.fc-wrap::before, .fc-fill { content: ""; position: absolute; left: 21px; top: 22px; bottom: 22px; width: 2px; border-radius: 2px; }
+.fc-wrap::before { background: var(--line); }
+.fc-fill { bottom: auto; height: calc((100% - 44px) * var(--fill, 0)); background: linear-gradient(180deg, var(--flame-2), var(--flame), var(--violet)); box-shadow: 0 0 12px rgba(255, 122, 61, 0.6); transition: height 0.6s cubic-bezier(.2, .7, .2, 1); }
+.fc { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; position: relative; }
+.fc button { display: flex; align-items: center; gap: 16px; width: 100%; padding: 0; border: 0; background: none; color: var(--fog); font: 500 16px/1.2 var(--body); text-align: left; cursor: pointer; }
+.fc-dot { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--ink-2); border: 1px solid var(--line); transition: background 0.4s, border-color 0.4s, box-shadow 0.4s, transform 0.4s; }
+.fc-dot svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fc-label { transition: color 0.3s, transform 0.3s; }
+.fc button:hover .fc-label { color: #fff; }
+.fc li.done .fc-dot { background: rgba(231, 56, 37, 0.18); border-color: rgba(255, 122, 61, 0.55); color: var(--flame-2); }
+.fc li.done .fc-label { color: rgba(255, 255, 255, 0.72); }
+.fc li.on .fc-dot { background: linear-gradient(135deg, var(--flame-2), var(--flame)); border-color: transparent; color: #fff; box-shadow: 0 0 0 6px rgba(231, 56, 37, 0.18), 0 0 28px rgba(255, 122, 61, 0.55); transform: scale(1.08); }
+.fc li.on .fc-label { color: #fff; font-weight: 600; transform: translateX(4px); }
+.fc button:focus-visible { outline: none; }
+.fc button:focus-visible .fc-dot { outline: 2px solid #fff; outline-offset: 3px; }
+
+.flow-cards { position: relative; display: grid; gap: 20px; }
+.flow-card { background: var(--glass); border: 1px solid var(--line); border-radius: 26px; padding: 34px 36px; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4); }
+.fc-num { display: block; font-size: clamp(54px, 6vw, 88px); font-weight: 500; line-height: 0.9; letter-spacing: -0.05em; background: linear-gradient(120deg, var(--flame-2), var(--flame) 55%, var(--lilac)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 18px; }
+.flow-card h3 { font-size: clamp(24px, 2.5vw, 34px); line-height: 1.12; letter-spacing: -0.025em; margin-bottom: 14px; }
+.flow-card > p { color: rgba(255, 255, 255, 0.78); font-size: 17px; line-height: 1.6; max-width: 40em; }
+.fc-chips { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.fc-chips li { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass-2); font-size: 13px; color: rgba(255, 255, 255, 0.85); }
+.flow-card .fc-out { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); font-size: 15px; color: #fff; }
+.fc-out b { display: inline-block; margin-right: 10px; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--flame-2); }
+
+/* Pinned, one card at a time (only once the script is running) */
+.flow.ready .flow-track { height: calc(var(--steps, 8) * 75vh + 100vh); }
+.flow.ready .flow-sticky { position: sticky; top: 0; min-height: 100vh; display: flex; align-items: center; padding-block: 88px 40px; }
+.flow.ready .flow-sticky > .wrap { width: 100%; }
+.flow.ready .flow-cards { display: block; min-height: 440px; }
+.flow.ready .flow-card { position: absolute; inset: 0 0 auto; opacity: 0; transform: translateY(48px) scale(0.97); pointer-events: none; transition: opacity 0.55s ease, transform 0.7s cubic-bezier(.2, .7, .2, 1); }
+.flow.ready .flow-card.past { transform: translateY(-48px) scale(0.97); }
+.flow.ready .flow-card.on { opacity: 1; transform: none; pointer-events: auto; }
+.flow.ready .flow-card.on .fc-chips li { animation: chip 0.5s cubic-bezier(.2, .7, .2, 1) both; }
+.flow.ready .flow-card.on .fc-chips li:nth-child(2) { animation-delay: 0.06s; }
+.flow.ready .flow-card.on .fc-chips li:nth-child(3) { animation-delay: 0.12s; }
+.flow.ready .flow-card.on .fc-chips li:nth-child(4) { animation-delay: 0.18s; }
+.flow.ready .flow-card.on .fc-chips li:nth-child(5) { animation-delay: 0.24s; }
+@keyframes chip { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 900px) {
+  .flow-grid { grid-template-columns: 1fr; gap: 22px; }
+  .flow-head { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 22px; }
+  .fc-wrap::before, .fc-fill { left: 18px; right: 18px; top: 18px; bottom: auto; width: auto; height: 2px; }
+  .fc-fill { right: auto; height: 2px; width: calc((100% - 36px) * var(--fill, 0)); transition: width 0.6s cubic-bezier(.2, .7, .2, 1); }
+  .fc { display: flex; justify-content: space-between; gap: 0; }
+  .fc-dot { width: 36px; height: 36px; }
+  .fc-dot svg { width: 17px; height: 17px; }
+  .fc-label { display: none; }
+  .flow-card { padding: 24px 22px; border-radius: 22px; }
+  .flow-card > p { font-size: 15px; line-height: 1.55; }
+  .fc-num { font-size: 46px; margin-bottom: 10px; }
+  .flow.ready .flow-sticky { padding-block: 76px 20px; }
+  .flow.ready .flow-cards { min-height: 470px; }
+}
+@media (max-width: 560px) {
+  .flow-head .eyebrow { display: none; }
+  .flow-head h2 { font-size: 28px; }
+  .flow-count { font-size: 12px; }
+  .flow.ready .flow-sticky { padding-block: 70px 12px; }
+  .flow-card { padding: 20px 18px; }
+  .flow-card h3 { font-size: 21px; margin-bottom: 10px; }
+  .flow-card > p { font-size: 14px; line-height: 1.5; }
+  .fc-num { font-size: 38px; margin-bottom: 8px; }
+  .fc-chips { margin-top: 12px; gap: 6px; }
+  .fc-chips li { font-size: 12px; padding: 4px 9px; }
+  .flow-card .fc-out { margin-top: 12px; padding-top: 12px; font-size: 13px; }
+}
+@media (max-width: 420px) {
+  .nav-links a[href="/help"] { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow.ready .flow-card, .fc-fill, .fc-dot { transition: none; }
+  .flow.ready .flow-card.on .fc-chips li { animation: none; }
+}
+
 /* 3. Live status (the old hero) */
-.now { position: relative; padding-block: 90px; }
+.now { position: relative; padding-block: 90px; overflow-x: clip; }
 .now::before { content: ""; position: absolute; z-index: -1; right: -20vw; top: 10%; width: 60vw; height: 70%; border-radius: 50%; filter: blur(110px); opacity: 0.32; background: linear-gradient(120deg, var(--violet), var(--flame) 70%); pointer-events: none; }
 .now .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 56px; align-items: center; }
 .now h2 { font-size: clamp(38px, 5.4vw, 78px); line-height: 1.02; letter-spacing: -0.035em; }

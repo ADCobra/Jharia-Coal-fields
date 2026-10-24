@@ -19,6 +19,7 @@
       <a class="nav-brand" href="/">Jharia Fire Watch</a>
       <nav class="nav-links" aria-label="Main">
         <a href="#mission" class="hide-sm">Mission</a>
+        <a href="#how" class="hide-sm">How it works</a>
         <a href="#look" class="hide-sm">Check a place</a>
         <a href="#roads" class="hide-sm">Road status</a>
         <a href="/help">Help</a>
@@ -86,6 +87,95 @@
       </div>
     </div>
     <p class="wrap reel-note">Photos belong to the publishers credited and are shown from their own sites.</p>
+  </section>
+
+  <section class="flow" id="how" aria-labelledby="flow-title">
+    <div class="flow-track">
+      <div class="flow-sticky">
+        <div class="wrap">
+          <div class="flow-head">
+            <div>
+              <span class="eyebrow">How it works</span>
+              <h2 id="flow-title">From a satellite photo to a <em>safer road.</em></h2>
+            </div>
+            <p class="flow-count" id="flow-count" aria-live="polite">Step 1 of 8</p>
+          </div>
+          <div class="flow-grid">
+            <div class="fc-wrap">
+            <span class="fc-fill" id="flow-fill" aria-hidden="true"></span>
+            <ol class="fc" id="flow-chart" aria-label="The eight steps">
+              <li class="on"><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><path d="M5 9l4-4 3 3-4 4zM12 16l4-4 3 3-4 4zM9 12l3 3M14 4l6 6M16 10a2 2 0 0 1 0 4"/></svg></span><span class="fc-label">Satellite pass</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><path d="M10 4a2 2 0 0 1 4 0v10a4 4 0 1 1-4 0zM12 9v7"/></svg></span><span class="fc-label">Surface temperature</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="11" height="11" rx="1"/><rect x="10" y="10" width="11" height="11" rx="1"/></svg></span><span class="fc-label">Alignment</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><path d="M12 3c2 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-5 3-7 1 2 2 3 3 3 0-3-1-5 0-7z"/></svg></span><span class="fc-label">Hot ground found</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="12" cy="11" r="2"/><path d="M7.5 15.5l3-3M13.5 9.5 18 5M14 5h4v4"/></svg></span><span class="fc-label">Tracking &amp; spread</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0 1 16 0M12 18l4-6"/></svg></span><span class="fc-label">Risk &amp; confidence</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="fc-label">Agent decides</span></button></li>
+              <li><button type="button"><span class="fc-dot"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7 13l3-3 2 2 4-4"/></svg></span><span class="fc-label">Dashboard &amp; alerts</span></button></li>
+            </ol>
+            </div>
+            <div class="flow-cards" id="flow-cards">
+              <article class="flow-card on">
+                <span class="fc-num">01</span>
+                <h3>A satellite photographs the coalfield</h3>
+                <p>Every 8 days Landsat 8 or 9 passes over Jharia. Fire Watch reads only the coalfield window of each scene: the heat band, six colour bands and the cloud mask, about 10 to 13 MB a pass.</p>
+                <ul class="fc-chips"><li>Landsat Collection 2</li><li>ST_B10 heat band</li><li>QA_PIXEL cloud mask</li><li>USGS new-scene alerts</li></ul>
+                <p class="fc-out"><b>Output</b> A fresh heat image and colour photo</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">02</span>
+                <h3>Heat becomes temperature</h3>
+                <p>Band 10 is turned into land-surface temperature: radiance, then brightness temperature, then a correction for how much heat the surface gives off, estimated from its vegetation. Cloud, shadow and water are masked so they can't fake a fire.</p>
+                <ul class="fc-chips"><li>Brightness temperature</li><li>NDVI emissivity</li><li>Cloud, shadow &amp; water mask</li></ul>
+                <p class="fc-out"><b>Output</b> Surface temperature, within 0.10 K on test data</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">03</span>
+                <h3>Every photo lined up with the last</h3>
+                <p>Each pass is aligned to a reference so the same patch of ground is compared every time. SIFT aligns it, ALIKED with LightGlue on OpenCV 5's new DNN engine aligns it again on its own, and DISK settles any disagreement around a hotspot.</p>
+                <ul class="fc-chips"><li>SIFT + USAC_ACCURATE</li><li>ALIKED + LightGlue</li><li>DISK</li><li>OpenCV 5</li></ul>
+                <p class="fc-out"><b>Output</b> Passes aligned to within half a pixel</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">04</span>
+                <h3>Hot ground found, false alarms filtered</h3>
+                <p>Dark coal and bare dumps warm up in the sun, so that heat is regressed out against brightness and vegetation. What's left is compared with the local background, and hysteresis and contours outline each hotspot. Coke ovens and other industrial heat are recognised and ignored.</p>
+                <ul class="fc-chips"><li>Albedo &amp; NDVI regression</li><li>Hysteresis thresholds</li><li>OpenCV contours</li><li>Industrial mask</li></ul>
+                <p class="fc-out"><b>Output</b> Hotspots, with precision 1.00 on both test worlds</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">05</span>
+                <h3>Each fire followed and projected</h3>
+                <p>Hotspots are joined into tracks from pass to pass. Optical flow measures how the hot front moved since the last pass, and an advection–diffusion ensemble projects where the fire could reach in the next 48 days.</p>
+                <ul class="fc-chips"><li>Track matching</li><li>DIS optical flow</li><li>48-day spread cone</li></ul>
+                <p class="fc-out"><b>Output</b> A spread cone covering 92% of the ground a fire went on to burn</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">06</span>
+                <h3>Risk, confidence and precedent</h3>
+                <p>Every hotspot gets a risk score from its heat, its spread and how close it is to a road, plus a score for how sure the system is. Similar past fires, found with OpenCV's nearest-neighbour index, show how fires like this one behaved.</p>
+                <ul class="fc-chips"><li>Risk score</li><li>Confidence score</li><li>cv2.ANNIndex precedent</li></ul>
+                <p class="fc-out"><b>Output</b> High, medium or low risk, and how sure it is</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">07</span>
+                <h3>The agent decides, a person stays in charge</h3>
+                <p>The agent closes a road within 250 m of a fire on its own only when risk is high and it is at least 70% sure. Fires half under cloud, threats seen only in the projection and anything it can't confirm go to a person with a recommendation. After two quiet passes it proposes reopening, and only a person can reopen a road.</p>
+                <ul class="fc-chips"><li>Close a road</li><li>Ask a person</li><li>Propose reopening</li><li>LangGraph agent</li></ul>
+                <p class="fc-out"><b>Output</b> Matched a safety officer's call in 37 of 38 test situations</p>
+              </article>
+              <article class="flow-card">
+                <span class="fc-num">08</span>
+                <h3>Everyone sees what changed</h3>
+                <p>Closures and decisions appear on the dashboard and the public road-status list, with every step the agent took and why. Alerts go out through AWS, and every map layer carries a record of where it came from.</p>
+                <ul class="fc-chips"><li>Dashboard</li><li>Public road status</li><li>SNS alerts</li><li>S3 + DynamoDB</li><li>XMP provenance</li></ul>
+                <p class="fc-out"><b>Output</b> Safer roads over a burning coalfield. <a href="/help#how">Read the full explanation</a></p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="now" id="now" aria-labelledby="now-title">
@@ -449,21 +539,6 @@
     </div>
   </section>
 
-  <section class="section how">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>How it works</h2>
-        <p>Every 8 days a Landsat satellite passes over Jharia. Each new photo goes through four steps.</p>
-      </div>
-      <ol class="how-steps">
-        <li><h3>Satellite photo</h3><p>Landsat 8 and 9 take a heat (thermal) photo of the coalfield along with a normal one.</p></li>
-        <li><h3>Hot ground found</h3><p>OpenCV lines the photo up with earlier ones and finds ground hotter than it should be. Sun-warmed coal and factories are filtered out.</p></li>
-        <li><h3>Spread predicted</h3><p>Each fire is followed photo to photo, and Fire Watch predicts where it could reach in the next 48 days.</p></li>
-        <li><h3>Roads protected</h3><p>An AI agent closes a road only when a fire is clearly close. When unsure it asks a person, and only a person can reopen a road.</p></li>
-      </ol>
-      <p style="margin-top:22px"><a href="/help#how">Read the full explanation</a></p>
-    </div>
-  </section>
 
   <section class="closer" aria-labelledby="closer-title">
     <div class="wrap">

@@ -83,8 +83,52 @@
   show(0);
   restart();
 
+  // How it works: the section pins, and each stretch of scrolling brings in the next step.
+  (function flow() {
+    const sec = document.getElementById("how");
+    if (!sec) return;
+    const track = sec.querySelector(".flow-track");
+    const nodes = [...sec.querySelectorAll(".fc li")];
+    const cards = [...sec.querySelectorAll(".flow-card")];
+    const fill = document.getElementById("flow-fill");
+    const count = document.getElementById("flow-count");
+    const n = cards.length;
+    sec.style.setProperty("--steps", n);
+    sec.classList.add("ready");
+    let cur = -1;
+    function set(i) {
+      if (i === cur) return;
+      cur = i;
+      nodes.forEach((li, k) => {
+        li.classList.toggle("done", k < i);
+        li.classList.toggle("on", k === i);
+        li.querySelector("button").setAttribute("aria-current", k === i ? "step" : "false");
+      });
+      cards.forEach((c, k) => {
+        c.classList.toggle("on", k === i);
+        c.classList.toggle("past", k < i);
+      });
+      fill.style.setProperty("--fill", i / (n - 1));
+      count.textContent = `Step ${i + 1} of ${n}`;
+    }
+    function progress() {
+      const r = track.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      const p = total > 0 ? Math.min(0.9999, Math.max(0, -r.top / total)) : 0;
+      set(Math.floor(p * n));
+    }
+    nodes.forEach((li, k) => li.querySelector("button").addEventListener("click", () => {
+      const r = track.getBoundingClientRect();
+      const total = r.height - window.innerHeight;
+      window.scrollTo({ top: window.scrollY + r.top + ((k + 0.5) / n) * total, behavior: reduced ? "auto" : "smooth" });
+    }));
+    window.addEventListener("scroll", progress, { passive: true });
+    window.addEventListener("resize", progress);
+    progress();
+  })();
+
   // Reveal blocks as they scroll into view.
-  const targets = document.querySelectorAll(".section-head, .mission-text, .stats li, .now .wrap > *, .paths .path, .how-steps li, .closer h2, .closer .ih-actions");
+  const targets = document.querySelectorAll(".section-head, .mission-text, .stats li, .now .wrap > *, .paths .path, .flow-head, .closer h2, .closer .ih-actions");
   if (reduced || !("IntersectionObserver" in window)) return;
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
