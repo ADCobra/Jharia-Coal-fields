@@ -286,7 +286,21 @@ Resources:
           echo "${DashboardSecret}" > /opt/firewatch/secret_arn
           /opt/firewatch/update.sh "${ImageUri}"
 
+  # HTTPS in front of the instance through an API Gateway HTTP API, with AWS's own certificate, so no domain is
+  # needed. Every request, cookie and form post is passed through to the dashboard. (CloudFront would also do,
+  # but new AWS accounts have to be verified by AWS Support before they can create a distribution.)
+  HttpsApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-https"
+      Description: Jharia Fire Watch over HTTPS
+      ProtocolType: HTTP
+      Target: !Sub "http://${Instance.PublicDnsName}"
+
 Outputs:
+  HttpsUrl:
+    Description: The site over HTTPS, through API Gateway.
+    Value: !Sub "${HttpsApi.ApiEndpoint}/"
   DashboardUrl:
     Value: !Sub "http://${Instance.PublicDnsName}/"
   DashboardPasswordCommand:

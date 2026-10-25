@@ -6,6 +6,14 @@ Coal seams under the Jharia coalfield in Jharkhand have been burning since 1916,
 
 Built for the OpenCV AI Competition 2026, on OpenCV 5.0 and AWS.
 
+## Live demo
+
+Running on AWS (Graviton, us-west-2):
+
+- **Homepage:** https://3t0xhbfunj.execute-api.us-west-2.amazonaws.com/
+- **Dashboard, simulated season:** https://3t0xhbfunj.execute-api.us-west-2.amazonaws.com/dashboard (the sign-in page comes filled in; press Sign in)
+- **The real Landsat season, read-only:** https://3t0xhbfunj.execute-api.us-west-2.amazonaws.com/real/ and its [dashboard](https://3t0xhbfunj.execute-api.us-west-2.amazonaws.com/real/dashboard), no sign-in
+
 ## Run it
 
 ```bash
@@ -98,6 +106,8 @@ ALERT_EMAIL=you@example.com DATA_SOURCE=landsat infra/deploy.sh   # process new 
 ```
 
 The script builds the arm64 image, pushes it to ECR, and creates the stack: S3 bucket, DynamoDB table, SNS alerts, an SQS queue subscribed to the USGS new-scene topic, a CloudWatch log group, a Secrets Manager password and a Graviton `t4g.large` (on an AWS Free plan account, add `INSTANCE_TYPE=t4g.small`, which gets 2 GB of swap). Run it again to roll out a new image. The stack outputs the dashboard URL and a command that prints the password (the user is `demo`). For Landsat mode, run `python scripts/fetch_osm.py` first so the image carries roads and industrial sites. The planner uses Amazon Nova Lite on Bedrock if model access is enabled, and falls back to the built-in policy if it is not.
+
+The stack also puts an API Gateway HTTP API in front of the instance, so the site has an HTTPS address with AWS's certificate and no domain to buy (output `HttpsUrl`). CloudFront would do the same, but a new AWS account has to be verified by AWS Support before it can create a distribution.
 
 Once it is up, `infra/ops.sh` works through SSM, with no SSH:
 

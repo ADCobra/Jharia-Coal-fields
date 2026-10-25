@@ -35,7 +35,9 @@ remote() {
 case "${1:-info}" in
   info)
     LOG_GROUP="$(output TraceLogGroup)"
-    echo "Dashboard:  $(output DashboardUrl)dashboard   (user demo)"
+    echo "Site:       $(output HttpsUrl)"
+    echo "Dashboard:  $(output HttpsUrl)dashboard   (user demo)"
+    echo "Real data:  $(output HttpsUrl)real/   (read-only, no sign-in)"
     echo "Password:   $(eval "$(output DashboardPasswordCommand)")"
     echo "Trace logs: https://$REGION.console.aws.amazon.com/cloudwatch/home?region=$REGION#logsV2:log-groups/log-group/$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(urllib.parse.quote(sys.argv[1], safe=""), safe="").replace("%", "$"))' "$LOG_GROUP")"
     echo "Alerts:     https://$REGION.console.aws.amazon.com/sns/v3/home?region=$REGION#/topic/$(output AlertTopicArn)"
